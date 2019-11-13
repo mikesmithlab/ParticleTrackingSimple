@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 
-def cmap(data, f, col_name, parameters=None):
+
+def cmap(colour_data cmap_type=None):
     '''
     cmap could have different use cases:
     1: 'discrete' data is colour coded according to some classifier
@@ -21,11 +23,19 @@ def cmap(data, f, col_name, parameters=None):
     :return: a
     '''
 
+    cmap_type = parameters[annotation_method]['cmap type']
+    if cmap_type == 'discrete':
+        cmap_name = 'Set1'
+    elif cmap_type == 'continuous':
+        cmap_name = 'seismic'
+
+    colour_obj = plt.get_cmap(cmap_name, np.size)
+
 
 
     data_column = data.get_info(f, col_name)
 
 
 if __name__=='__main__':
-    cmap = plt.get_cmap('Set1')
-    print(cmap)
+    colour = plt.get_cmap('Set1',2)
+    print(colour(np.array([0.01,0.1])))

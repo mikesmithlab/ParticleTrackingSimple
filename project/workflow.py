@@ -31,8 +31,8 @@ postprocess = {
 annotate = {
     'annotate method': ('circles',),
     'circles':{'radius':10,
-               'cmaptype':'discrete',#'continuous'
-               'cmap':{0:(0,0,255),0.5:(0,255,0)},#{0:0}
+               'cmap type':'discrete',#'continuous'
+               'cmap column':'x',#None
                'thickness':2
                }
     }
