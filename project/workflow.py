@@ -29,7 +29,17 @@ postprocess = {
     }
 
 annotate = {
-    'annotate method': ('circles',),
+    'annotate method': ('vectors',),
+    'vectors':{'dx column':'x',
+               'dy column':'y',
+               'thickness':2,
+               'line type':8,
+               'tip length':[1,1,100,1],
+               'vector scale':[1,1,2000,1],
+               'cmap type':'continuous',
+               'cmap column':'y',
+               'cmap max':[1,1,2000,1]
+                },
     'circles':{'radius':10,
                'cmap type':'continuous',
                'cmap column':'x',#None

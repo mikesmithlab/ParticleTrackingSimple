@@ -32,6 +32,28 @@ def circles(frame, data, f, parameters=None):
         frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
     return frame
 
+def vectors(frame, data, f, parameters=None):
+
+    dx = parameters['vectors']['dx column']
+    dy = parameters['vectors']['dy column']
+
+    vectors = data.get_info(f, ['x', 'y',dx, dy])
+
+    thickness = get_param_val(parameters['vectors']['thickness'])
+    line_type = 8
+    tipLength = 0.01*get_param_val(parameters['vectors']['tip length'])
+    vector_scale = 0.01*get_param_val(parameters['vectors']['vector scale'])
+
+
+    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method='vectors')
+    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
+
+    for i, vector in enumerate(vectors):
+        frame = cv2.arrowedLine(frame, (int(vector[0]), int(vector[1])),
+                                (int(vector[0]+vector[2]*vector_scale),int(vector[1]+vector[3]*vector_scale)),
+                                color=colours[i], thickness=thickness,line_type=line_type,shift=0,tipLength=tipLength)
+    return frame
+
 #Not yet working
 def _boxes(frame, data, f, parameters=None):
     #Requires a column classifying traj with corresponding colour

@@ -10,7 +10,7 @@ def cmap_variables(data, f, parameters, method=None):
     :param f: frame number
     :param parameters: annotation parameters dictionary
     :param method: String of the method being used to annotate
-    
+
     :return: Numpy array of data to be used in colour coding, type of colour map, maximum value to scale data.
     '''
     colour_data = data.get_info(f, parameters[method]['cmap column'])
