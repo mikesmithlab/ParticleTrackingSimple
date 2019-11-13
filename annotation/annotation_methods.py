@@ -1,7 +1,8 @@
 from ParticleTrackingSimple.general.parameters import get_param_val
-from ParticleTrackingSimple.general.dataframes import DataStore
+from ParticleTrackingSimple.annotation.cmap import colourmap, cmap_variables
 from Generic import images
 import cv2
+
 
 
 def circles(frame, data, f, parameters=None):
@@ -19,18 +20,15 @@ def circles(frame, data, f, parameters=None):
     '''
 
     if 'r' not in list(data.df.columns):
-        data.add_particle_property('r', get_param_val(parameters['circle']['radius']))
+        data.add_particle_property('r', get_param_val(parameters['circles']['radius']))
 
-
-
-
-    thickness = get_param_val(parameters['circle']['thickness'])
+    thickness = get_param_val(parameters['circles']['thickness'])
     circles = data.get_info(f, ['x', 'y', 'r'])
 
-    cmap_type = parameters['circle']['cmap type']
-    colour_data = data.get_info(f, parameters['circle']['cmap column'])
-    colours = cmap(colour_data, cmap_type=cmap_type)
-    for circle in circles:
+    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method='circles')
+    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
+
+    for i, circle in enumerate(circles):
         frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
     return frame
 

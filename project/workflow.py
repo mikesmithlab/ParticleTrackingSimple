@@ -1,4 +1,4 @@
-from ParticleTracking.project import PTWorkflow
+from ParticleTrackingSimple.project import PTWorkflow
 
 preprocess = {
     'crop method':'no_crop',
@@ -31,8 +31,9 @@ postprocess = {
 annotate = {
     'annotate method': ('circles',),
     'circles':{'radius':10,
-               'cmap type':'discrete',#'continuous'
+               'cmap type':'continuous',
                'cmap column':'x',#None
+               'cmap max':[1,1,2000,1],
                'thickness':2
                }
     }
@@ -81,9 +82,9 @@ class PTProject(PTWorkflow):
         PTWorkflow.__init__(self, video_filename=video_filename)
 
         self.preprocess_select = True
-        self.track_select = False
+        self.track_select = True
         self.postprocess_select = False
-        self.annotate_select = False
+        self.annotate_select = True
 
         self.parameters = PARAMETERS
 
@@ -93,7 +94,7 @@ class PTProject(PTWorkflow):
 
 if '__main__' == __name__:
 
-    from ParticleTracking.tracking.tracking_gui import TrackingGui
+    from ParticleTrackingSimple.tracking.tracking_gui import TrackingGui
 
     track = PTProject(video_filename='/home/mike/Documents/HydrogelTest.m4v')
     #track.process()

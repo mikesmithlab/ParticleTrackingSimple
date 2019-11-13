@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from Generic import images
-from ParticleTracking.preprocessing import preprocessing_methods as pm
-from ParticleTracking.preprocessing import preprocessing_crops as pc
+from ParticleTrackingSimple.preprocessing import preprocessing_methods as pm
+from ParticleTrackingSimple.preprocessing import preprocessing_crops as pc
 
 """
 All processing methods should be added as functions in preprocessing_methods

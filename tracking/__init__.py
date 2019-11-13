@@ -4,8 +4,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from Generic import video
-from ParticleTracking.general import dataframes
-from ParticleTracking.tracking import tracking_methods as tm
+from ParticleTrackingSimple.general import dataframes
+from ParticleTrackingSimple.tracking import tracking_methods as tm
 
 
 

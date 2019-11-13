@@ -1,7 +1,7 @@
 from Generic import video
-from ParticleTracking.annotation import annotation_methods as am
+from ParticleTrackingSimple.annotation import annotation_methods as am
 from tqdm import tqdm
-from ParticleTracking.general import dataframes
+from ParticleTrackingSimple.general import dataframes
 
 
 class TrackingAnnotator:#video.Annotator):

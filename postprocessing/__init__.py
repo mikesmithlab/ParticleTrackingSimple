@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-from ParticleTracking.general.dataframes import DataStore
-from ParticleTracking.postprocessing import postprocessing_methods as pm
+from ParticleTrackingSimple.general.dataframes import DataStore
+from ParticleTrackingSimple.postprocessing import postprocessing_methods as pm
 
 class PostProcessor:
     def __init__(self, parameters=None, data_filename=None):

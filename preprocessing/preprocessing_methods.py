@@ -2,7 +2,7 @@ from Generic import images
 import cv2
 import cv2
 import numpy as np
-from ParticleTracking.general.parameters import  get_param_val
+from ParticleTrackingSimple.general.parameters import  get_param_val
 
 
 def distance(frame, parameters=None):

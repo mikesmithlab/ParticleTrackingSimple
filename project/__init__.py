@@ -1,5 +1,5 @@
 from Generic.video import ReadVideo
-from ParticleTracking import tracking, preprocessing, postprocessing,annotation, linking
+from ParticleTrackingSimple import tracking, preprocessing, postprocessing,annotation, linking
 import os.path
 
 
