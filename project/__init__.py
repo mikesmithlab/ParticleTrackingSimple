@@ -1,8 +1,7 @@
-from ParticleTrackingSimple import  tracking, preprocessing, postprocessing,annotation, linking, cropping
-from ParticleTrackingSimple.cropping import ReadCropVideo
+from ParticleTrackingSimple import  tracking, preprocessing, postprocessing,annotation, linking
+from ParticleTrackingSimple.video_crop import ReadCropVideo
 import os.path
-import numpy as np
-from Generic.images.basics import display
+
 
 class PTWorkflow:
     '''
@@ -10,8 +9,8 @@ class PTWorkflow:
     
     '''
     def __init__(self, video_filename=None):
-        #Load video file, load dataframe, load config
-        #create video object
+        #Load video_crop file, load dataframe, load config
+        #create video_crop object
         self.video_filename=video_filename
         self.filename=os.path.splitext(self.video_filename)[0]
         self.data_filename=self.filename + '.hdf5'
@@ -56,7 +55,7 @@ class PTWorkflow:
         #For use with the TrackingGui
         frame=self.cap.find_frame(frame_num)
         if self.preprocess_select:
-            newframe=self.ip.process(frame)
+            newframe=self.ip.process(frame.copy())
         else:
             newframe=frame
         if self.track_select:
@@ -66,6 +65,6 @@ class PTWorkflow:
         if self.annotate_select:
             annotatedframe=self.an.annotate(f_index=frame_num)
         else:
-            annotatedframe=self.crop.crop_frame(frame)
+            annotatedframe=frame
         return newframe, annotatedframe
 

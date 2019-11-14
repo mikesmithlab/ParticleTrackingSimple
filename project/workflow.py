@@ -1,14 +1,13 @@
 from ParticleTrackingSimple.project import PTWorkflow
 
 crop = {'crop_method': 'crop_box',
-        'crop_coords': None,
-        'mask':None
+        'crop_coords': (254, 92, 864, 529),#None,
+        'mask': None
         }
 
 preprocess = {
     'preprocessor_method': ('grayscale','adaptive_threshold'),
-    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],
-                           'C': [12, -30, 30, 1],
+    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],                           'C': [12, -30, 30, 1],
                             'mode': [1, 0, 1, 1]
                           }
     }
@@ -33,12 +32,13 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('text_label', 'var_label'),
+    'annotate_method': ('circles','text_label', 'var_label'),
+    'videowriter':'opencv',
     'text_label':{'text':'Mike',
                  'position':(100,100),
                  'font_colour':(0,0,255),
                  'font_size':4,
-                 'thickness':3
+                 'font_thickness':3
                  },
     'var_label':{'var_column':'index',
                  'position':(100,100),
@@ -141,9 +141,9 @@ class PTProject(PTWorkflow):
         PTWorkflow.__init__(self, video_filename=video_filename)
         self.crop_select = True
         self.preprocess_select = True
-        self.track_select = False
+        self.track_select = True
         self.postprocess_select = False
-        self.annotate_select = False
+        self.annotate_select = True
 
         self.parameters = PARAMETERS
 
@@ -156,5 +156,5 @@ if '__main__' == __name__:
     from ParticleTrackingSimple.tracking.tracking_gui import TrackingGui
 
     track = PTProject(video_filename='/home/mike/Videos/HydrogelTest.m4v')
-    #track.process()
-    TrackingGui(track)
+    track.process()
+    #TrackingGui(track)

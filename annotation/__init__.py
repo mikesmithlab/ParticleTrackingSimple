@@ -1,18 +1,21 @@
-from Generic import video
+from Generic.video import WriteVideo, WriteVideoFFMPEG
 from ParticleTrackingSimple.annotation import annotation_methods as am
-from tqdm import tqdm
 from ParticleTrackingSimple.general import dataframes
+from tqdm import tqdm
 
 
-class TrackingAnnotator:#video.Annotator):
+class TrackingAnnotator:
 
     def __init__(self, parameters=None, vidobject=None, data_filename=None, bitrate='HIGH1080', framerate=50):
         self.parameters = parameters
         self.cap = vidobject
         self.data_filename=data_filename
         self.output_filename = self.cap.filename[:-4] + '_annotate.mp4'
-        self.out = video.WriteVideoFFMPEG(self.output_filename,
-                                          bitrate=bitrate, framerate=framerate)
+        frame_size = (self.cap.height, self.cap.width, 3)
+        if parameters['videowriter'] == 'opencv':
+            self.out = WriteVideo(filename=self.output_filename, frame_size=frame_size)
+        elif parameters['videowriter'] == 'ffmpeg':
+            self.out = WriteVideoFFMPEG(self.output_filename, bitrate=bitrate, framerate=framerate)
 
     def annotate(self, f_index=None):
         with dataframes.DataStore(self.data_filename, load=True) as data:

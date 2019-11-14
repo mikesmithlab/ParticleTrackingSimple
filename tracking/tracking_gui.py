@@ -1,5 +1,5 @@
 from Generic.images import ParamGui
-from Generic.images.basics import stack_3
+from Generic.images.basics import stack_3, display
 import numpy as np
 
 class TrackingGui(ParamGui):
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     from ParticleTracking.other_legacy.james_nitrile import JamesPT
     from Generic import filedialogs
 
-    file = filedialogs.load_filename('Load a video')
+    file = filedialogs.load_filename('Load a video_crop')
     choice = input('Enter 1 for example, 2 for James')
     if int(choice) == 1:
         tracker = ExampleChild(file)

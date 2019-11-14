@@ -14,7 +14,7 @@ class ExampleChild(ParticleTracker):
         Parameters
         ----------
         filename: str
-            filepath for video.ReadVideo class
+            filepath for video_crop.ReadVideo class
 
         tracking: bool
             If true, do steps specific to tracking.
@@ -89,6 +89,6 @@ class ExampleChild(ParticleTracker):
 
 if __name__ == "__main__":
     from Generic import filedialogs
-    file = filedialogs.load_filename('Load a video')
+    file = filedialogs.load_filename('Load a video_crop')
     tracker = ExampleChild(file, tracking=True, multiprocess=False)
     tracker.track()

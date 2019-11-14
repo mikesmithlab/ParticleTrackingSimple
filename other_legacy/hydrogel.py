@@ -14,7 +14,7 @@ class Hydrogel(ParticleTracker):
         Parameters
         ----------
         filename: str
-            filepath for video.ReadVideo class
+            filepath for video_crop.ReadVideo class
 
         tracking: bool
             If true, do steps specific to tracking.
@@ -90,7 +90,7 @@ class Hydrogel(ParticleTracker):
 
 if __name__ == "__main__":
     from ParticleTracking.tracking.tracking_gui import TrackingGui
-    #file = filedialogs.load_filename('Load a video')
+    #file = filedialogs.load_filename('Load a video_crop')
     file='/home/mike/Documents/HydrogelTest.m4v'
     tracker = Hydrogel(file, tracking=False, multiprocess=False)
     TrackingGui(tracker)

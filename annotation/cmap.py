@@ -46,7 +46,6 @@ def colourmap(colour_data, cmap_type=None, cmax_max=None):
 
     if cmax_max is None:
         cmax_max = np.max(colour_data)
-    print(np.max(colour_data))
 
     colour_obj = plt.get_cmap(cmap_name, np.size(colour_data))
     colour_vals = 255*colour_obj(colour_data/cmax_max)

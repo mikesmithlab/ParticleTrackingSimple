@@ -36,7 +36,7 @@ class PropertyCalculator:
 
     def duty_cycle(self):
         """
-        Calculates the duty cycle from the audio channel of the video.
+        Calculates the duty cycle from the audio channel of the video_crop.
 
         Saves the result in the Duty column of the dataframe.
         """

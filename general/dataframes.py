@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 import pandas as pd
 
@@ -12,7 +11,7 @@ class DataStore:
     ----------
     df : pandas dataframe
         Contains info on particle positions and properties.
-        Index of dataframe is the video frame.
+        Index of dataframe is the video_crop frame.
 
     metadata : dict
         Dictionary containing any metadata values.

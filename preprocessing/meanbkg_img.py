@@ -1,7 +1,6 @@
 from Generic.filedialogs import BatchProcess
 from Generic.video import ReadVideo
 import numpy as np
-from Generic.images import display
 import cv2
 
 if __name__ == '__main__':

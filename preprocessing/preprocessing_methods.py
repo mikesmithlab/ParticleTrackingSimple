@@ -1,9 +1,7 @@
-from Generic import images
-import cv2
 import cv2
 import numpy as np
 from ParticleTrackingSimple.general.parameters import  get_param_val
-
+from ParticleTrackingSimple.general.imageformat import bgr_2_grayscale
 
 def distance(frame, parameters=None):
     '''
@@ -36,32 +34,7 @@ def grayscale(frame, parameters=None):
 
     :return: A grayscale image
     '''
-    return images.bgr_2_grayscale(frame)
-
-
-def crop_and_mask(frame, parameters=None):
-    """
-    Masks then crops a given frame
-
-    Takes a frame and uses a bitwise_and operation with the input mask_img
-    to mask the image around a shape.
-    It then crops the image around the mask.
-
-    Parameters
-    ----------
-    frame: numpy array
-        A numpy array of an image of type uint8
-
-    Returns
-    -------
-    cropped_frame: numpy array
-        A numpy array containing an image which has been cropped and masked
-    """
-    mask_im = parameters['mask image']
-    crop = parameters['crop']
-    masked_frame = images.mask_img(frame, mask_im)
-    cropped_frame = images.crop_img(masked_frame, crop)
-    return cropped_frame
+    return bgr_2_grayscale(frame)
 
 def subtract_bkg(frame, parameters=None):
     '''
@@ -100,7 +73,6 @@ def subtract_bkg(frame, parameters=None):
                               norm_type=cv2.NORM_MINMAX)
 
     return frame
-
 
 def variance(frame, parameters=None):
     '''
@@ -156,7 +128,6 @@ def flip(frame, parameters=None):
     '''
     return ~frame
 
-
 def threshold(frame, parameters=None):
     '''
     Apply a global image threshold
@@ -175,8 +146,8 @@ def threshold(frame, parameters=None):
     '''
     threshold = get_param_val(parameters['threshold'])
     mode = get_param_val(parameters['threshold mode'])
-    return images.threshold(frame, threshold, mode)
-
+    ret, out = cv2.threshold(frame,threshold,255,mode)
+    return out
 
 def adaptive_threshold(frame, parameters=None):
     '''
@@ -204,10 +175,10 @@ def adaptive_threshold(frame, parameters=None):
     invert = get_param_val(params['mode'])
 
     if invert == 1:
-        return images.adaptive_threshold(frame, block, const, mode=cv2.THRESH_BINARY_INV)
+        out = cv2.adaptiveThreshold(frame,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, block, const)
     else:
-        return images.adaptive_threshold(frame, block, const)
-
+        out = cv2.adaptiveThreshold(frame, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, block, const)
+    return out
 
 def blur(frame, parameters=None):
     '''
@@ -225,7 +196,8 @@ def blur(frame, parameters=None):
     :return: blurred image
     '''
     kernel = get_param_val(parameters['blur_kernel'])
-    return images.gaussian_blur(frame, (kernel, kernel))
+    out = cv2.GaussianBlur(frame, (kernel, kernel), 0)
+    return out
 
 def medianblur(frame, parameters=None):
     '''
@@ -243,85 +215,8 @@ def medianblur(frame, parameters=None):
     :return: blurred image
     '''
     kernel = get_param_val(parameters['blur_kernel'])
-    return images.median_blur(frame, kernel)
-
-def opening(frame, parameters=None):
-    '''
-    Opening an image
-
-    This is a morphological operation which applies an erosion followed by a dilation
-    This tends to remove small isolated objects.
-    https://homepages.inf.ed.ac.uk/rbf/HIPR2/open.htm
-
-    options:
-    parameters['opening kernel'] specifies the dimensions of a square kernel
-
-    :param frame: binary image
-    :param parameters: parameters dictionary
-
-    :return: binary image
-    '''
-    kernel = get_param_val(parameters['opening_kernel'])
-    return images.opening(frame, (kernel, kernel))
-
-
-def closing(frame, parameters=None):
-    '''
-    Closing an image
-
-    This is a morphological operation which applies a dilation followed
-    by an erosion. Tends to fill in holes.
-    https://homepages.inf.ed.ac.uk/rbf/HIPR2/close.htm
-
-    options:
-    parameters['closing kernel'] specifies the dimensions of a square kernel
-
-    :param frame: binary image
-    :param parameters: parameters dictionary
-
-    :return: binary image
-    '''
-    kernel = get_param_val(parameters['closing_kernel'])
-    return images.closing(frame, (kernel, kernel))
-
-
-def dilate(frame, parameters=None):
-    '''
-    dilation of an image
-
-    This is a morphological operation which applies a kernel to an image to add
-    to edge pixels. https://homepages.inf.ed.ac.uk/rbf/HIPR2/dilate.htm
-
-    options:
-    parameters['dilate kernel'] specifies the dimensions of a square kernel
-
-    :param frame: binary image
-    :param parameters: parameters dictionary
-
-    :return: binary image
-    '''
-    kernel = get_param_val(parameters['dilate_kernel'])
-    return images.dilate(frame, (kernel, kernel))
-
-
-def erode(frame, parameters=None):
-    '''
-    dilation of an image
-
-    This is a morphological operation which applies a kernel to an image to remove
-    edge pixels. https://homepages.inf.ed.ac.uk/rbf/HIPR2/erode.htm
-
-    options:
-    parameters['erode kernel'] specifies the dimensions of a square kernel
-
-    :param frame: binary image
-    :param parameters: parameters dictionary
-
-    :return: binary image
-    '''
-    kernel = get_param_val(parameters['erode_kernel'])
-    return images.erode(frame, (kernel, kernel))
-
+    out = cv2.medianBlur(frame, (kernel,kernel))
+    return out
 
 def adjust_gamma(image, parameters=None):
     '''
@@ -361,11 +256,5 @@ def resize(frame, parameters=None):
     :return: image
     '''
     scale = get_param_val(parameters['resize_scale'])
-    return images.resize(frame, scale)
+    return cv2.resize(frame, scale)
 
-if __name__ == "__main__":
-    """Run this to output list of functions"""
-    from ParticleTracking.preprocessing import preprocessing_methods as pm
-    all_dir = dir(pm)
-    all_functions = [a for a in all_dir if a[0] != '_']
-    print(all_functions)

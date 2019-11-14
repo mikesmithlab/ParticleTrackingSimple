@@ -1,8 +1,8 @@
 from ParticleTrackingSimple.general.parameters import get_param_val
 from ParticleTrackingSimple.annotation.cmap import colourmap, cmap_variables
-from Generic import images
+from ParticleTrackingSimple.general.contours import draw_contours
 import cv2
-import numpy as np
+
 
 '''
 --------------------------------------------------------------------------------------
@@ -11,6 +11,7 @@ Text annotation
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 '''
+
 def text_label(frame, data, f, parameters=None):
     '''
     Function puts text on an image at specific location.
@@ -118,8 +119,9 @@ def boxes(frame, data, f, parameters=None):
     box = data.get_info(f, 'box')
     classifiers = data.get_info(f,'classifier')
     for index, classifier in enumerate(classifiers):
-       annotated_frame = images.draw_contours(frame, [
-        box[index]], col=get_param_val(parameters['colors'])[classifier], thickness=get_param_val(parameters['contour thickness']))
+       annotated_frame = draw_contours(frame, [
+                                 box[index]], col=get_param_val(parameters['colors'])[classifier],
+                                       thickness=get_param_val(parameters['contour thickness']))
     return annotated_frame
 
 def contours(frame, data, f, parameters=None):
