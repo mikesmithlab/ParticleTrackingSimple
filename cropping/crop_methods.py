@@ -1,9 +1,21 @@
 from Generic import images
 import numpy as np
 import cv2
+from ParticleTrackingSimple.cropping.crop_box_gui import ROIfigure
 
 
-def find_manual_crop_and_mask(frame):
+
+def crop_box(frame, crop_coords=None):
+    if crop_coords is None:
+        crop=ROIfigure(frame, coords=crop_coords)
+        crop_coords = crop.coords
+
+    cropped_frame = frame[crop_coords[1]:crop_coords[1]+crop_coords[3], crop_coords[0]:crop_coords[0]+crop_coords[2],:]
+    mask_img = np.ones(np.shape(frame))
+    return cropped_frame, mask_img, crop_coords
+
+
+def find_manual_crop_and_mask(frame, crop_coords=None):
     """
     Opens a crop shape instance with the input frame and no_of_sides
 
@@ -45,7 +57,14 @@ def find_blue_hex_crop_and_mask(frame):
     boundary[:, 1] -= crop[0][1]
     return crop, mask_img, boundary
 
-def no_crop(frame):
+def no_crop(frame, crop_coords=None):
+    '''
+    no_crop leaves the frame unchanged and returns the boundary coordinates.
+
+    :param frame:
+    :param crop_coords: If == None then sets interactive crop. Else should supply correct coords for crop method.
+    :return: boundary coordinates
+    '''
     shp = np.shape(frame)
     w, h = shp[:2]
     boundary = np.array([[0, 0], [0, w], [w, h], [0, h]])

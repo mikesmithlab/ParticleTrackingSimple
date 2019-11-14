@@ -1,7 +1,11 @@
 from ParticleTrackingSimple.project import PTWorkflow
 
+crop = {'crop_method': 'crop_box',
+        'crop_coords': None,
+        'mask':None
+        }
+
 preprocess = {
-    'crop_method':'no_crop',
     'preprocessor_method': ('grayscale','adaptive_threshold'),
     'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],
                            'C': [12, -30, 30, 1],
@@ -30,6 +34,48 @@ postprocess = {
 
 annotate = {
     'annotate_method': ('text_label', 'var_label'),
+    'text_label':{'text':'Mike',
+                 'position':(100,100),
+                 'font_colour':(0,0,255),
+                 'font_size':4,
+                 'thickness':3
+                 },
+    'var_label':{'var_column':'index',
+                 'position':(100,100),
+                 'font_colour':(255,0,255),
+                 'font_size':4,
+                 'font_thickness':3
+                 },
+    'particle_values': {'values_column': 'mass',
+                        'font_colour': (255, 0, 255),
+                        'font_size': 1,
+                        'font_thickness': 1
+                        },
+    'circles':{'radius':10,
+               'cmap_type':'continuous',
+               'cmap_column':'x',#None
+               'cmap_max':[1,1,2000,1],
+               'thickness':2
+               },
+    'boxes':{'radius':10,
+               'cmap_type':'continuous',
+               'cmap_column':'x',#None
+               'cmap_max':[1,1,2000,1],
+               'thickness':2
+               },
+    'contours':{'radius':10,
+               'cmap_type':'continuous',
+               'cmap_column':'x',#None
+               'cmap_max':[1,1,2000,1],
+               'thickness':2
+               },
+    'networks':{'radius':10,
+               'cmap_type':'continuous',
+               'cmap_column':'x',#None
+               'cmap_max':[1,1,2000,1],
+               'thickness':2
+               },
+
     'vectors':{'dx_column':'x',
                'dy_column':'y',
                'thickness':2,
@@ -40,34 +86,19 @@ annotate = {
                'cmap_column':'y',
                'cmap_max':[1,1,2000,1]
                 },
-    'circles':{'radius':10,
+
+    'trajectories':{'numframes':(-5,0),
                'cmap_type':'continuous',
                'cmap_column':'x',#None
                'cmap_max':[1,1,2000,1],
                'thickness':2
-               },
-    'particle_values':{'values_column':'mass',
-                        'font_colour':(255,0,255),
-                        'font_size':1,
-                        'font_thickness':1
-                        },
-    'var_label':{'var_column':'index',
-                 'position':(100,100),
-                 'font_colour':(255,0,255),
-                 'font_size':4,
-                 'font_thickness':3
-                 },
-    'text_label':{'text':'Mike',
-                 'position':(100,100),
-                 'font_colour':(0,0,255),
-                 'font_size':4,
-                 'thickness':3
-                 }
+               }
+
 
     }
 
 PARAMETERS = {
-    #'crop':crop,
+    'crop': crop,
     'preprocess':preprocess,
     'track':track,
     'link':link,
@@ -108,11 +139,11 @@ class PTProject(PTWorkflow):
         #Select operations to be performed
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-
+        self.crop_select = True
         self.preprocess_select = True
-        self.track_select = True
+        self.track_select = False
         self.postprocess_select = False
-        self.annotate_select = True
+        self.annotate_select = False
 
         self.parameters = PARAMETERS
 

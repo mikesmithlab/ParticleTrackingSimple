@@ -42,6 +42,7 @@ class TrackingGui(ParamGui):
     def update(self):
         self.update_slideable_parameters()
         new_frame, annotated_frame = self.tracker.process_frame(self.param_dict['frame'][0])
+
         if np.size(np.shape(new_frame)) == 2:
             new_frame = stack_3(new_frame)
         if np.size(np.shape(annotated_frame)) == 2:

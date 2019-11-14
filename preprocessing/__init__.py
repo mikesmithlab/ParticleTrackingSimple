@@ -1,8 +1,6 @@
-import cv2
 import numpy as np
-from Generic import images
 from ParticleTrackingSimple.preprocessing import preprocessing_methods as pm
-from ParticleTrackingSimple.preprocessing import preprocessing_crops as pc
+from ParticleTrackingSimple.cropping import crop_methods as pc
 
 """
 All processing methods should be added as functions in preprocessing_methods
@@ -52,7 +50,7 @@ class Preprocessor:
 
     """
 
-    def __init__(self, parameters, cap, return_all=True):
+    def __init__(self, parameters):
         """
         Parameters
         ----------
@@ -70,16 +68,7 @@ class Preprocessor:
             If 'blue hex' then uses auto crop function
             If 'manual' then uses manual crop function
         """
-        self.cap = cap
-
         self.parameters = parameters
-        self.crop_method = self.parameters['crop_method']
-        self.mask_img = np.array([])
-        self.crop = []
-        self.boundary = None
-        self.return_all = return_all
-
-        self.calls = 0
 
     def update_parameters(self, parameters):
         self.parameters = parameters
@@ -103,24 +92,9 @@ class Preprocessor:
         boundary: numpy array
             Contains information about the boundary points
         """
-
-        # Find the crop for the first frame
-        #if self.calls == 0:
-        self.crop, self.mask_img, self.boundary = \
-            getattr(pc, self.parameters['crop_method'])(frame)
-        self.parameters['crop'] = self.crop
-        self.parameters['mask_image'] = self.mask_img
-
-        # Perform each method in the method list
-        cropped_frame = frame.copy()
-
         for method in self.parameters['preprocessor_method']:
             # Use function in preprocessing_methods
             frame = getattr(pm, method)(frame, self.parameters)
-            if method == 'crop_and_mask':
-                cropped_frame = frame.copy()
-        self.calls += 1
-        if self.return_all:
-            return frame, self.boundary, cropped_frame
-        else:
-            return frame
+
+        return frame
+

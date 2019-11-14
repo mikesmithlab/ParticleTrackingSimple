@@ -68,41 +68,9 @@ class ParticleTracker:
         self.cap=vidobject
         self.data_filename = self.filename + '.hdf5'
 
-        #cpus = mp.cpu_count()
-        #self.multiprocess = multiprocess
-        #self.num_processes = cpus // 2 if self.multiprocess else 1
-
-
     def track(self, f_index=None):
         """Call this to start tracking"""
-
-        #if self.multiprocess:
-        #    self._track_multiprocess()
-        #else:
-        #    print('here')
-        #    print(f_index)
         self._track_process(0, f_index=f_index)
-
-        self.save_crop()
-        #self.extra_steps()
-
-    def save_crop(self):
-        with dataframes.DataStore(self.data_filename) as data:
-            crop = self.ip.crop
-            data.add_metadata('crop', crop)
-
-    #def extra_steps(self):
-    #    pass
-
-    #def _track_multiprocess(self):
-    #    """Splits processing into chunks"""
-    #    p = mp.Pool(self.num_processes)
-    #    p.map(self._track_process, range(self.num_processes))
-    #    p.close()
-    #    p.join()
-    #    self._cleanup_intermediate_dataframes()
-
-
 
     def _track_process(self, group_number, f_index=None):
         """
