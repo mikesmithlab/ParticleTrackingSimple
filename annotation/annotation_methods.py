@@ -2,6 +2,7 @@ from ParticleTrackingSimple.general.parameters import get_param_val
 from ParticleTrackingSimple.annotation.cmap import colourmap, cmap_variables
 from Generic import images
 import cv2
+import numpy as np
 
 
 
@@ -34,15 +35,15 @@ def circles(frame, data, f, parameters=None):
 
 def vectors(frame, data, f, parameters=None):
 
-    dx = parameters['vectors']['dx column']
-    dy = parameters['vectors']['dy column']
+    dx = parameters['vectors']['dx_column']
+    dy = parameters['vectors']['dy_column']
 
     vectors = data.get_info(f, ['x', 'y',dx, dy])
 
     thickness = get_param_val(parameters['vectors']['thickness'])
     line_type = 8
-    tipLength = 0.01*get_param_val(parameters['vectors']['tip length'])
-    vector_scale = 0.01*get_param_val(parameters['vectors']['vector scale'])
+    tipLength = 0.01*get_param_val(parameters['vectors']['tip_length'])
+    vector_scale = 0.01*get_param_val(parameters['vectors']['vector_scale'])
 
 
     colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method='vectors')
@@ -54,6 +55,8 @@ def vectors(frame, data, f, parameters=None):
                                 color=colours[i], thickness=thickness,line_type=line_type,shift=0,tipLength=tipLength)
     return frame
 
+
+
 #Not yet working
 def _boxes(frame, data, f, parameters=None):
     #Requires a column classifying traj with corresponding colour
@@ -64,7 +67,31 @@ def _boxes(frame, data, f, parameters=None):
         box[index]], col=get_param_val(parameters['colors'])[classifier], thickness=get_param_val(parameters['contour thickness']))
     return annotated_frame
 
-def add_label(frame, data, f, parameters=None):
+def var_label(frame, data, f, parameters=None):
+    '''
+    Function puts text on an image at specific location.
+    This function is for adding data specific to a single frame or info not labelling
+    particles with their ids. The data for a given frame should be stored in 'var_column'
+    ie all particles have this value stored. You could use it to put the "temperature" on
+    a frame or the mean order parameter etc. Calling 'index' will place the
+
+    :param frame: frame to be annotated should be 3 colour channel
+    :param data: datastore with particle information
+    :param f: frame number
+    :param parameters: annotation sub dictionary.
+
+    :return: annotated frame
+    '''
+
+    var_column=parameters['var_label']['var_column']
+    text = str(data.get_info(f, var_column)[0])
+    position = parameters['var_label']['position']
+
+    annotated_frame=cv2.putText(frame, text, position, cv2.FONT_HERSHEY_COMPLEX, parameters['var_label']['font_size'], parameters['var_label']['font_colour'],parameters['var_label']['font_thickness'], cv2.LINE_AA)
+
+    return annotated_frame
+
+def text_label(frame, data, f, parameters=None):
     '''
     Function puts text on an image at specific location.
     This function is for adding metadata or info not labelling
@@ -77,14 +104,13 @@ def add_label(frame, data, f, parameters=None):
 
     :return: annotated frame
     '''
-    text=''
-    x=1
-    y=1
-    annotated_frame=cv2.putText(frame, text ,(x, y), parameters['font'], parameters['font size'], parameters['font colour'],1, cv2.LINE_AA)
+    text=parameters['text_label']['text']
+    position = parameters['text_label']['position']
+    annotated_frame=cv2.putText(frame, text, position, cv2.FONT_HERSHEY_COMPLEX, parameters['text_label']['font_size'], parameters['text_label']['font_colour'],parameters['text_label']['font_thickness'], cv2.LINE_AA)
 
     return annotated_frame
 
-def add_particle_numbers(frame, data, f, parameters=None):
+def particle_values(frame, data, f, parameters=None):
     '''
         Function annotates image with particle ids
         This function only makes sense if run on linked trajectories
@@ -99,10 +125,11 @@ def add_particle_numbers(frame, data, f, parameters=None):
 
     x = data.get_info(f, 'x')
     y = data.get_info(f, 'y')
-    particles = data.get_info(f, 'particle')
 
-    for index in enumerate(particles):
-        frame = cv2.putText(frame, str(int(particles[index])), (int(x[index]), int(y[index])), parameters['font'], parameters['font size'], params['font colours'], 1, cv2.LINE_AA)
+    particle_values = data.get_info(f, parameters['particle_values']['values_column']).astype(int)
+
+    for index, particle_val in enumerate(particle_values):
+        frame = cv2.putText(frame, str(particle_val), (int(x[index]), int(y[index])), cv2.FONT_HERSHEY_COMPLEX, parameters['particle_values']['font_size'], parameters['particle_values']['font_colour'], parameters['particle_values']['font_thickness'], cv2.LINE_AA)
 
     return frame
 

@@ -197,12 +197,12 @@ def adaptive_threshold(frame, parameters=None):
 
     :return: binary image
     '''
-    params = parameters['adaptive threshold']
-    print('pre test')
+    params = parameters['adaptive_threshold']
 
-    block = get_param_val(params['block size'])
+    block = get_param_val(params['block_size'])
     const = get_param_val(params['C'])
     invert = get_param_val(params['mode'])
+
     if invert == 1:
         return images.adaptive_threshold(frame, block, const, mode=cv2.THRESH_BINARY_INV)
     else:
@@ -224,7 +224,7 @@ def blur(frame, parameters=None):
 
     :return: blurred image
     '''
-    kernel = get_param_val(parameters['blur kernel'])
+    kernel = get_param_val(parameters['blur_kernel'])
     return images.gaussian_blur(frame, (kernel, kernel))
 
 def medianblur(frame, parameters=None):
@@ -235,14 +235,14 @@ def medianblur(frame, parameters=None):
     Good for removing speckle noise
 
     options:
-    parameters['blur kernel'] specifies the dimensions of a square kernel
+    parameters['blur_kernel'] specifies the dimensions of a square kernel
 
     :param frame: grayscale image
     :param parameters: parameters dictionary
 
     :return: blurred image
     '''
-    kernel = get_param_val(parameters['blur kernel'])
+    kernel = get_param_val(parameters['blur_kernel'])
     return images.median_blur(frame, kernel)
 
 def opening(frame, parameters=None):
@@ -261,7 +261,7 @@ def opening(frame, parameters=None):
 
     :return: binary image
     '''
-    kernel = get_param_val(parameters['opening kernel'])
+    kernel = get_param_val(parameters['opening_kernel'])
     return images.opening(frame, (kernel, kernel))
 
 
@@ -281,7 +281,7 @@ def closing(frame, parameters=None):
 
     :return: binary image
     '''
-    kernel = get_param_val(parameters['closing kernel'])
+    kernel = get_param_val(parameters['closing_kernel'])
     return images.closing(frame, (kernel, kernel))
 
 
@@ -300,7 +300,7 @@ def dilate(frame, parameters=None):
 
     :return: binary image
     '''
-    kernel = get_param_val(parameters['dilate kernel'])
+    kernel = get_param_val(parameters['dilate_kernel'])
     return images.dilate(frame, (kernel, kernel))
 
 
@@ -319,7 +319,7 @@ def erode(frame, parameters=None):
 
     :return: binary image
     '''
-    kernel = get_param_val(parameters['erode kernel'])
+    kernel = get_param_val(parameters['erode_kernel'])
     return images.erode(frame, (kernel, kernel))
 
 
@@ -360,7 +360,7 @@ def resize(frame, parameters=None):
 
     :return: image
     '''
-    scale = get_param_val(parameters['resize scale'])
+    scale = get_param_val(parameters['resize_scale'])
     return images.resize(frame, scale)
 
 if __name__ == "__main__":

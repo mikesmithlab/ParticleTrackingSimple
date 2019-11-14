@@ -1,9 +1,9 @@
 from ParticleTrackingSimple.project import PTWorkflow
 
 preprocess = {
-    'crop method':'no_crop',
-    'preprocessor method': ('grayscale','adaptive_threshold'),
-    'adaptive threshold':{'block size': 81,#[81, 3, 101, 2],
+    'crop_method':'no_crop',
+    'preprocessor_method': ('grayscale','adaptive_threshold'),
+    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],
                            'C': [12, -30, 30, 1],
                             'mode': [1, 0, 1, 1]
                           }
@@ -11,41 +11,59 @@ preprocess = {
 
 track = {
     'track method':'trackpy',
-    'trackpy':{'size estimate':[19,1, 101,2],
+    'trackpy':{'size_estimate':[19,1, 101,2],
                 'invert':[0,0,1,1]
                }
     }
 
 link = {
-    'link method':'',
-    'max frame displacement': 50,
-    'min frame life': 1,
+    'link_method':'',
+    'max_frame_displacement': 50,
+    'min_frame_life': 1,
     'memory': 3,
-    'trajectory smoothing': 3,
+    'trajectory_smoothing': 3,
     }
 
 postprocess = {
-    'postprocess method': None
+    'postprocess_method': None
     }
 
 annotate = {
-    'annotate method': ('vectors',),
-    'vectors':{'dx column':'x',
-               'dy column':'y',
+    'annotate_method': ('text_label', 'var_label'),
+    'vectors':{'dx_column':'x',
+               'dy_column':'y',
                'thickness':2,
-               'line type':8,
-               'tip length':[1,1,100,1],
-               'vector scale':[1,1,2000,1],
-               'cmap type':'continuous',
-               'cmap column':'y',
-               'cmap max':[1,1,2000,1]
+               'line_type':8,
+               'tip_length':[1,1,100,1],
+               'vector_scale':[1,1,2000,1],
+               'cmap_type':'continuous',
+               'cmap_column':'y',
+               'cmap_max':[1,1,2000,1]
                 },
     'circles':{'radius':10,
-               'cmap type':'continuous',
-               'cmap column':'x',#None
-               'cmap max':[1,1,2000,1],
+               'cmap_type':'continuous',
+               'cmap_column':'x',#None
+               'cmap_max':[1,1,2000,1],
                'thickness':2
-               }
+               },
+    'particle_values':{'values_column':'mass',
+                        'font_colour':(255,0,255),
+                        'font_size':1,
+                        'font_thickness':1
+                        },
+    'var_label':{'var_column':'index',
+                 'position':(100,100),
+                 'font_colour':(255,0,255),
+                 'font_size':4,
+                 'font_thickness':3
+                 },
+    'text_label':{'text':'Mike',
+                 'position':(100,100),
+                 'font_colour':(0,0,255),
+                 'font_size':4,
+                 'thickness':3
+                 }
+
     }
 
 PARAMETERS = {
@@ -106,6 +124,6 @@ if '__main__' == __name__:
 
     from ParticleTrackingSimple.tracking.tracking_gui import TrackingGui
 
-    track = PTProject(video_filename='/home/mike/Documents/HydrogelTest.m4v')
+    track = PTProject(video_filename='/home/mike/Videos/HydrogelTest.m4v')
     #track.process()
     TrackingGui(track)

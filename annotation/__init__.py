@@ -27,7 +27,7 @@ class TrackingAnnotator:#video.Annotator):
             for f in tqdm(range(start, stop, 1), 'Annotating'):
                 frame = self.cap.read_next_frame()
 
-                for method in self.parameters['annotate method']:
+                for method in self.parameters['annotate_method']:
                     # Use function in preprocessing_methods
                     frame = getattr(am, method)(frame, data, f, self.parameters)
                 if f_index is None:

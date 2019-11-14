@@ -148,7 +148,10 @@ class DataStore:
         headings: list of str
             Titles of dataframe columns to be returned
         """
-        return self.df.loc[frame, headings].values
+        if headings == 'index':
+            return self.df.loc[frame].index.values
+        else:
+            return self.df.loc[frame, headings].values
 
     def load(self):
         """Load HDFStore"""

@@ -25,6 +25,6 @@ def track_big_blob(frame, parameters=None):
     return info, boundary, info_headings
 
 def trackpy(frame, parameters=None):
-    df = tp.locate(frame, get_param_val(parameters['trackpy']['size estimate']), invert=get_param_val(parameters['trackpy']['invert']))
+    df = tp.locate(frame, get_param_val(parameters['trackpy']['size_estimate']), invert=get_param_val(parameters['trackpy']['invert']))
     return df
 

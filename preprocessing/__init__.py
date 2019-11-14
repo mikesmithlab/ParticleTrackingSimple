@@ -73,7 +73,7 @@ class Preprocessor:
         self.cap = cap
 
         self.parameters = parameters
-        self.crop_method = self.parameters['crop method']
+        self.crop_method = self.parameters['crop_method']
         self.mask_img = np.array([])
         self.crop = []
         self.boundary = None
@@ -107,14 +107,14 @@ class Preprocessor:
         # Find the crop for the first frame
         #if self.calls == 0:
         self.crop, self.mask_img, self.boundary = \
-            getattr(pc, self.parameters['crop method'])(frame)
+            getattr(pc, self.parameters['crop_method'])(frame)
         self.parameters['crop'] = self.crop
-        self.parameters['mask image'] = self.mask_img
+        self.parameters['mask_image'] = self.mask_img
 
         # Perform each method in the method list
         cropped_frame = frame.copy()
 
-        for method in self.parameters['preprocessor method']:
+        for method in self.parameters['preprocessor_method']:
             # Use function in preprocessing_methods
             frame = getattr(pm, method)(frame, self.parameters)
             if method == 'crop_and_mask':
