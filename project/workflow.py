@@ -7,7 +7,8 @@ crop = {'crop_method': 'crop_box',
 
 preprocess = {
     'preprocessor_method': ('grayscale','adaptive_threshold'),
-    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],                           'C': [12, -30, 30, 1],
+    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],
+                           'C': [12, -30, 30, 1],
                             'mode': [1, 0, 1, 1]
                           }
     }
@@ -20,15 +21,19 @@ track = {
     }
 
 link = {
-    'link_method':'',
-    'max_frame_displacement': 50,
-    'min_frame_life': 1,
-    'memory': 3,
-    'trajectory_smoothing': 3,
+    'link_method':'default',
+    'default':{'max_frame_displacement': 50,
+                'min_frame_life': 1,
+                'memory': 3,
+                'trajectory_smoothing': 3
+                }
     }
 
 postprocess = {
-    'postprocess_method': None
+    'postprocess_method': ('difference',),
+    'difference':{'column_names':['x','y'],
+                  'span':5
+                  }
     }
 
 annotate = {
@@ -143,7 +148,7 @@ class PTProject(PTWorkflow):
         self.preprocess_select = True
         self.track_select = True
         self.postprocess_select = False
-        self.annotate_select = True
+        self.annotate_select = False
 
         self.parameters = PARAMETERS
 

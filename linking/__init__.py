@@ -12,10 +12,7 @@ class LinkTrajectory:
         with dataframes.DataStore(self.data_filename) as data:
             # Trackpy methods
             data.reset_index()
-            data.df = trackpy.link_df(
-                data.df,
-                self.parameters['max frame displacement'],
-                memory=self.parameters['memory'])
+            data.df = trackpy.link_df(data.df,self.parameters['default']['max frame displacement'],memory=self.parameters['default']['memory'])
 
             data.df = trackpy.filter_stubs(
                 data.df, self.parameters['min frame life'])

@@ -11,14 +11,7 @@ class ReadCropVideo(ReadVideo):
         #self.read_next_frame()
 
     def read_next_frame(self):
-        '''reads the next available frame'''
-        if self.filetype == 'video_crop':
-            ret, frame = self.read_vid.read()
-        elif self.filetype == 'img_seq':
-            ret = True
-            frame = self.read_vid[self.frame_num]
-        else:
-            ret = False
+        ret, frame = self.read_vid.read()
         self.frame_num = self.frame_num + 1
 
         if ret:
