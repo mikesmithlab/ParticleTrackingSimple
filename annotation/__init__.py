@@ -1,6 +1,7 @@
 from Generic.video import WriteVideo, WriteVideoFFMPEG
 from ParticleTrackingSimple.annotation import annotation_methods as am
 from ParticleTrackingSimple.general import dataframes
+from ParticleTrackingSimple.general.parameters import get_method_name
 from tqdm import tqdm
 
 
@@ -32,7 +33,8 @@ class TrackingAnnotator:
 
                 for method in self.parameters['annotate_method']:
                     # Use function in preprocessing_methods
-                    frame = getattr(am, method)(frame, data, f, self.parameters)
+                    method_name, call_num = get_method_name(method)
+                    frame = getattr(am, method_name)(frame, data, f, self.parameters, call_num=call_num)
                 if f_index is None:
                     self.out.add_frame(frame)
             if f_index is None:

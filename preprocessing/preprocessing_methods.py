@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
-from ParticleTrackingSimple.general.parameters import  get_param_val
+from ParticleTrackingSimple.general.parameters import  get_param_val, get_method_key
 from ParticleTrackingSimple.general.imageformat import bgr_2_grayscale
 
-def distance(frame, parameters=None):
+
+def distance(frame, parameters=None, call_num=None):
     '''
     Performs distance transform:
 
@@ -22,7 +23,7 @@ def distance(frame, parameters=None):
     dist = cv2.distanceTransform(frame, cv2.DIST_L2, 5)
     return dist
 
-def grayscale(frame, parameters=None):
+def grayscale(frame, parameters=None, call_num=None):
     '''
     Convert colour to grayscale:
 
@@ -36,7 +37,7 @@ def grayscale(frame, parameters=None):
     '''
     return bgr_2_grayscale(frame)
 
-def subtract_bkg(frame, parameters=None):
+def subtract_bkg(frame, parameters=None, call_num=None):
     '''
     Subtract bkg image
 
@@ -74,7 +75,7 @@ def subtract_bkg(frame, parameters=None):
 
     return frame
 
-def variance(frame, parameters=None):
+def variance(frame, parameters=None, call_num=None):
     '''
     variance image
 
@@ -117,7 +118,7 @@ def variance(frame, parameters=None):
 
     return frame
 
-def flip(frame, parameters=None):
+def flip(frame, parameters=None, call_num=None):
     '''
     Inverts a binary frame
 
@@ -128,7 +129,7 @@ def flip(frame, parameters=None):
     '''
     return ~frame
 
-def threshold(frame, parameters=None):
+def threshold(frame, parameters=None, call_num=None):
     '''
     Apply a global image threshold
 
@@ -144,12 +145,15 @@ def threshold(frame, parameters=None):
 
     :return: binary image
     '''
-    threshold = get_param_val(parameters['threshold'])
-    mode = get_param_val(parameters['threshold mode'])
+    method_key = get_method_key('threshold', call_num=call_num)
+    params = parameters[method_key]
+
+    threshold = get_param_val(params['threshold'])
+    mode = get_param_val(params['threshold mode'])
     ret, out = cv2.threshold(frame,threshold,255,mode)
     return out
 
-def adaptive_threshold(frame, parameters=None):
+def adaptive_threshold(frame, parameters=None, call_num=None):
     '''
     Adaptive threshold
 
@@ -168,7 +172,8 @@ def adaptive_threshold(frame, parameters=None):
 
     :return: binary image
     '''
-    params = parameters['adaptive_threshold']
+    method_key = get_method_key('adaptive_threshold', call_num=call_num)
+    params = parameters[method_key]
 
     block = get_param_val(params['block_size'])
     const = get_param_val(params['C'])
@@ -180,7 +185,7 @@ def adaptive_threshold(frame, parameters=None):
         out = cv2.adaptiveThreshold(frame, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, block, const)
     return out
 
-def blur(frame, parameters=None):
+def blur(frame, parameters=None, call_num=None):
     '''
     Gaussian blur
 
@@ -195,11 +200,14 @@ def blur(frame, parameters=None):
 
     :return: blurred image
     '''
+    method_key = get_method_key('blur', call_num=call_num)
+    params = parameters[method_key]
+
     kernel = get_param_val(parameters['blur_kernel'])
     out = cv2.GaussianBlur(frame, (kernel, kernel), 0)
     return out
 
-def medianblur(frame, parameters=None):
+def medianblur(frame, parameters=None, call_num=None):
     '''
     Median blur
 
@@ -214,11 +222,14 @@ def medianblur(frame, parameters=None):
 
     :return: blurred image
     '''
+    method_key = get_method_key('medianblur', call_num=call_num)
+    params = parameters[method_key]
+
     kernel = get_param_val(parameters['blur_kernel'])
     out = cv2.medianBlur(frame, (kernel,kernel))
     return out
 
-def adjust_gamma(image, parameters=None):
+def adjust_gamma(image, parameters=None, call_num=None):
     '''
     Gamma correction
 
@@ -231,7 +242,10 @@ def adjust_gamma(image, parameters=None):
 
     :return: image
     '''
-    gamma = get_param_val(parameters['gamma'])/100.0
+    method_key = get_method_key('adjust_gamma', call_num=call_num)
+    params = parameters[method_key]
+
+    gamma = get_param_val(params['gamma'])/100.0
     # build a lookup table mapping the pixel values [0, 255] to
     # their adjusted gamma values
     invGamma = 1.0 / gamma
@@ -241,7 +255,7 @@ def adjust_gamma(image, parameters=None):
     # apply gamma correction using the lookup table
     return cv2.LUT(image, table)
 
-def resize(frame, parameters=None):
+def resize(frame, parameters=None, call_num=None):
     '''
     Resize an image
 
@@ -255,6 +269,9 @@ def resize(frame, parameters=None):
 
     :return: image
     '''
-    scale = get_param_val(parameters['resize_scale'])
+    method_key = get_method_key('resize', call_num=call_num)
+    params = parameters[method_key]
+
+    scale = get_param_val(params['resize_scale'])
     return cv2.resize(frame, scale)
 

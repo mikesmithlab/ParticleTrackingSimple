@@ -1,5 +1,5 @@
 from ParticleTrackingSimple.preprocessing import preprocessing_methods as pm
-
+from ParticleTrackingSimple.general.parameters import get_method_name
 
 class Preprocessor:
     """
@@ -20,6 +20,7 @@ class Preprocessor:
         Preprocesses single frame
         '''
         for method in self.parameters['preprocessor_method']:
-            frame = getattr(pm, method)(frame, self.parameters)
+            method_name, call_num = get_method_name(method)
+            frame = getattr(pm, method_name)(frame, self.parameters, call_num=call_num)
         return frame
 

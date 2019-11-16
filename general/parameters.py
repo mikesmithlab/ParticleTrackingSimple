@@ -12,3 +12,18 @@ def get_param_val(param):
         return param[0]
     else:
         return param
+
+def get_method_name(method):
+    if '_' in method:
+        method_name, call_num = method.split('_')
+    else:
+        method_name = method
+        call_num = None
+    return method_name, call_num
+
+def get_method_key(method, call_num=None):
+    if call_num is None:
+        method_key = method
+    else:
+        method_key = method + '_' + call_num
+    return method_key

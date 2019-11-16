@@ -30,10 +30,21 @@ link = {
     }
 
 postprocess = {
-    'postprocess_method': ('difference',),
+    'postprocess_method': ('difference'),
+    'smooth':{'column_names':['x','y'],
+              'span':5,
+              'method':'default'
+              },
     'difference':{'column_names':['x','y'],
                   'span':5
-                  }
+                  },
+    'rate':{'column_names':['x','y'],
+            'method':'finite_difference'},
+    'neighbours':{'method':'voronoi'
+
+    },
+    'classify':{'column_name':'x',
+                'bin_edges':[0,1,2]}
     }
 
 annotate = {
