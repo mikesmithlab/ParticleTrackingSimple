@@ -22,7 +22,7 @@ track = {
 
 link = {
     'link_method':'default',
-    'default':{'max_frame_displacement': 50,
+    'default':{'max_frame_displacement': 10,
                 'min_frame_life': 1,
                 'memory': 3,
                 'trajectory_smoothing': 3
@@ -30,16 +30,20 @@ link = {
     }
 
 postprocess = {
-    'postprocess_method': ('difference'),
-    'smooth':{'column_names':['x','y'],
+    'postprocess_method': ('rate',),
+    'smooth':{'column_name':'y',
+              'output_name':'y_smooth',
               'span':5,
               'method':'default'
               },
-    'difference':{'column_names':['x','y'],
-                  'span':5
+    'difference':{'column_name':'x',
+                  'output_name':'x_diff',
+                  'span':2
                   },
-    'rate':{'column_names':['x','y'],
-            'method':'finite_difference'},
+    'rate':{'column_name':'x',
+            'output_name':'vx',
+            'method':'finite_difference'
+              },
     'neighbours':{'method':'voronoi'
 
     },
@@ -152,13 +156,14 @@ class PTProject(PTWorkflow):
     '''
 
     def __init__(self, video_filename=None):
-        #Select operations to be performed
+        #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = True
-        self.preprocess_select = True
-        self.track_select = True
-        self.postprocess_select = False
+        self.crop_select = False
+        self.preprocess_select = False
+        self.track_select = False
+        self.link_select=False
+        self.postprocess_select = True
         self.annotate_select = False
 
         self.parameters = PARAMETERS

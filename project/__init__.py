@@ -46,6 +46,8 @@ class PTWorkflow:
     def process(self):
         if self.track_select:
             self.pt.track()
+        if self.link_select:
+            self.link.link_trajectories()
         if self.postprocess_select:
             self.pp.process()
         if self.annotate_select:
