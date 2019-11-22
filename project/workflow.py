@@ -30,7 +30,7 @@ link = {
     }
 
 postprocess = {
-    'postprocess_method': ('rate',),
+    'postprocess_method': ('magnitude',),
     'smooth':{'column_name':'y',
               'output_name':'y_smooth',
               'span':5,
@@ -40,8 +40,17 @@ postprocess = {
                   'output_name':'x_diff',
                   'span':2
                   },
+    'magnitude':{'column_names':['x','y'],
+                 'output_name':'v'
+    },
+    'angle':{'column_names':['x','y'],
+             'output_name':'theta',
+             'units':'degrees'
+
+    },
     'rate':{'column_name':'x',
             'output_name':'vx',
+            'fps':50.0,
             'method':'finite_difference'
               },
     'neighbours':{'method':'voronoi'
