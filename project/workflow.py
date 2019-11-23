@@ -46,10 +46,10 @@ postprocess = {
                   'output_name':'y_diff',
                   'span':2
                   },
-    'magnitude':{'column_names':['vx','vy'],
+    'magnitude':{'column_names':('vx','vy'),
                  'output_name':'v'
     },
-    'angle':{'column_names':['x','y'],
+    'angle':{'column_names':('x','y'),
              'output_name':'theta',
              'units':'degrees'
 
@@ -69,11 +69,11 @@ postprocess = {
     },
     'classify':{'column_name':'v',
                 'output_name':'classify',
-                'bin_edges':[0,1,2]}
+                'bin_edges':(0,1,2)}
     }
 
 annotate = {
-    'annotate_method': ('circles','text_label', 'var_label'),
+    'annotate_method': ('particle_values','trajectories',),
     'videowriter':'opencv',
     'text_label':{'text':'Mike',
                  'position':(100,100),
@@ -87,7 +87,7 @@ annotate = {
                  'font_size':4,
                  'font_thickness':3
                  },
-    'particle_values': {'values_column': 'mass',
+    'particle_values': {'values_column': 'particle',
                         'font_colour': (255, 0, 255),
                         'font_size': 1,
                         'font_thickness': 1
@@ -95,7 +95,7 @@ annotate = {
     'circles':{'radius':10,
                'cmap_type':'continuous',
                'cmap_column':'x',#None
-               'cmap_max':[1,1,2000,1],
+               'cmap_max':[300,1,2000,1],
                'thickness':2
                },
     'boxes':{'radius':10,
@@ -128,11 +128,15 @@ annotate = {
                'cmap_max':[1,1,2000,1]
                 },
 
-    'trajectories':{'numframes':(-5,0),
-               'cmap_type':'continuous',
-               'cmap_column':'x',#None
-               'cmap_max':[1,1,2000,1],
-               'thickness':2
+    'trajectories':{'x_column':'x',
+                    'y_column':'y',
+                    'traj_length':(-25,0),
+                    'classifier_column':None,
+                    'classifier':None,
+                    'cmap_type':'continuous',
+                    'cmap_column':'x',#None
+                    'cmap_max':[200,1,2000,1],
+                    'thickness':2
                }
 
 
@@ -184,8 +188,8 @@ class PTProject(PTWorkflow):
         self.preprocess_select = False
         self.track_select = False
         self.link_select=False
-        self.postprocess_select = True
-        self.annotate_select = False
+        self.postprocess_select =False
+        self.annotate_select = True
 
         self.parameters = PARAMETERS
 
@@ -198,5 +202,5 @@ if '__main__' == __name__:
     from ParticleTrackingSimple.tracking.tracking_gui import TrackingGui
 
     track = PTProject(video_filename='/home/mike/Videos/HydrogelTest.m4v')
-    track.process()
-    #TrackingGui(track)
+    #track.process()
+    TrackingGui(track)

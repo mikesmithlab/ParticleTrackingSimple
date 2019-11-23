@@ -33,7 +33,9 @@ class TrackingAnnotator:
 
                 for method in self.parameters['annotate_method']:
                     # Use function in preprocessing_methods
+                    print(method)
                     method_name, call_num = get_method_name(method)
+                    print(method_name)
                     frame = getattr(am, method_name)(frame, data, f, self.parameters, call_num=call_num)
                 if f_index is None:
                     self.out.add_frame(frame)
