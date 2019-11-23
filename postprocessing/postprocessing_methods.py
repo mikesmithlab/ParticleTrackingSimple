@@ -1,7 +1,4 @@
-import pandas as pd
 import numpy as np
-from ParticleTrackingSimple.general import dataframes
-import trackpy as tp
 from ParticleTrackingSimple.general.parameters import get_method_key
 
 
@@ -21,42 +18,11 @@ def difference(data, parameters=None, call_num=None):
     span = parameters[method_key]['span']
     column = parameters[method_key]['column_name']
     output_name = parameters[method_key]['output_name']
-    data=data.sort_values(['particle','index'])
+
     data[output_name] = data[column].diff(periods=span)
     data['nan'] = data['particle'].diff(periods=span).astype(bool)
     data[output_name][data['nan'] == True] = np.NaN
     data.drop(labels='nan',axis=1)
-    return data
-
-
-
-def magnitude(data, parameters=None, call_num=None):
-    method_key=get_method_key('magnitude', call_num)
-    columns = parameters[method_key]['column_names']
-    output_name = parameters[method_key]['output_name']
-    column_data=data[columns]
-    if np.size(columns) == 2:
-        data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2)**0.5
-    elif np.size(columns) == 3:
-        data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2 + column_data[columns[2]]**2)**0.5
-    return data
-
-def angle(data, parameters=None, call_num=None):
-    '''
-    angle assumes you want to calculate from column_data[0] as x and column_data[1] as y
-    it uses tan2 so that -x and +y give a different result to +x and -y
-    Angles are output in radians or degrees given by parameters['angle']['units']
-
-    :param data: dataframe input
-    :param parameters: dictionary of params
-    :param call_num:
-
-    :return: dataframe with new angle column.
-    '''
-    method_key = get_method_key('angle', call_num)
-    columns = parameters[method_key]['column_names']
-    output_name = parameters[method_key]['output_name']
-    data[output_name] = np.arctan2(data[columns[0]]/data[data[columns[1]]])
     return data
 
 def rate(data, parameters=None, call_num=None):
@@ -96,6 +62,35 @@ def rate(data, parameters=None, call_num=None):
     data.drop(labels=['nan','temp_diff','dt'], axis=1)
     return data
 
+def magnitude(data, parameters=None, call_num=None):
+    method_key=get_method_key('magnitude', call_num)
+    columns = parameters[method_key]['column_names']
+    output_name = parameters[method_key]['output_name']
+    column_data=data[columns]
+    if np.size(columns) == 2:
+        data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2)**0.5
+    elif np.size(columns) == 3:
+        data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2 + column_data[columns[2]]**2)**0.5
+    return data
+
+def angle(data, parameters=None, call_num=None):
+    '''
+    angle assumes you want to calculate from column_data[0] as x and column_data[1] as y
+    it uses tan2 so that -x and +y give a different result to +x and -y
+    Angles are output in radians or degrees given by parameters['angle']['units']
+
+    :param data: dataframe input
+    :param parameters: dictionary of params
+    :param call_num:
+
+    :return: dataframe with new angle column.
+    '''
+    method_key = get_method_key('angle', call_num)
+    columns = parameters[method_key]['column_names']
+    output_name = parameters[method_key]['output_name']
+    data[output_name] = np.arctan2(data[columns[0]]/data[data[columns[1]]])
+    return data
+
 def neighbours(data, parameters=None, call_num=None,):
     method_key = get_method_key('neighbours', call_num)
     pass
@@ -103,5 +98,6 @@ def neighbours(data, parameters=None, call_num=None,):
 
 def classify(data, parameters=None, call_num=None):
     method_key = get_method_key('classify', call_num)
-    pass
+    column = parameters[method_key]['column_name']
+    output_name=parameters[method_key]['output_name']
     return data

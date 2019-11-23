@@ -22,15 +22,17 @@ track = {
 
 link = {
     'link_method':'default',
-    'default':{'max_frame_displacement': 10,
-                'min_frame_life': 1,
+    'default':{'search_range': 10,
+                'pos_columns':None,
+                'max_frame_displacement': 10,#
                 'memory': 3,
-                'trajectory_smoothing': 3
+                'min_frame_life': 1
+                #
                 }
     }
 
 postprocess = {
-    'postprocess_method': ('magnitude',),
+    'postprocess_method': ('classify'),
     'smooth':{'column_name':'y',
               'output_name':'y_smooth',
               'span':5,
@@ -40,7 +42,11 @@ postprocess = {
                   'output_name':'x_diff',
                   'span':2
                   },
-    'magnitude':{'column_names':['x','y'],
+    'difference*2':{'column_name':'y',
+                  'output_name':'y_diff',
+                  'span':2
+                  },
+    'magnitude':{'column_names':['vx','vy'],
                  'output_name':'v'
     },
     'angle':{'column_names':['x','y'],
@@ -53,10 +59,16 @@ postprocess = {
             'fps':50.0,
             'method':'finite_difference'
               },
+    'rate*2':{'column_name':'y',
+            'output_name':'vy',
+            'fps':50.0,
+            'method':'finite_difference'
+              },
     'neighbours':{'method':'voronoi'
 
     },
-    'classify':{'column_name':'x',
+    'classify':{'column_name':'v',
+                'output_name':'classify',
                 'bin_edges':[0,1,2]}
     }
 

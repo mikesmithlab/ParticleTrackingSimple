@@ -14,8 +14,8 @@ def get_param_val(param):
         return param
 
 def get_method_name(method):
-    if '_' in method:
-        method_name, call_num = method.split('_')
+    if '*' in method:
+        method_name, call_num = method.split('*')
     else:
         method_name = method
         call_num = None
@@ -25,5 +25,5 @@ def get_method_key(method, call_num=None):
     if call_num is None:
         method_key = method
     else:
-        method_key = method + '_' + call_num
+        method_key = method + '*' + call_num
     return method_key
