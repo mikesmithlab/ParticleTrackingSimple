@@ -4,6 +4,7 @@ from ParticleTrackingSimple.general.contours import draw_contours
 from ParticleTrackingSimple.general.parameters import get_method_key
 import cv2
 import numpy as np
+import pandas as pd
 
 
 '''
@@ -179,57 +180,40 @@ def vectors(frame, data, f, parameters=None, call_num=None):
 
 def trajectories(frame, data, f, parameters=None, call_num=None):
     #This can only be run on a linked trajectory
-    print(f)
-
-    df = data.df
-    df = df.sort_values(['particle', 'index'])
-
     method_key = get_method_key('trajectories', call_num=call_num)
-    x = parameters[method_key]['x_column']
-    y = parameters[method_key]['y_column']
-    traj_length = parameters[method_key]['traj_length']
-    classifier_column=parameters[method_key]['classifier_column']
+    traj_length = get_param_val(parameters[method_key]['traj_length'])
+    if f-traj_length < 0:
+        traj_length = f
+
+    df = data.df.sort_index()
+    df.index.name='frame'
+    df['frame'] = df.index
+    df2 = df.loc[f-traj_length:f]
+
+
+    classifier_column = parameters[method_key]['classifier_column']
     classifier = parameters[method_key]['classifier']
 
-    particle_ids = data.get_info(f, 'particle')
-    print(np.size(particle_ids))
-    if classifier_column is not None:
-        classifier_column = data.get_info(f, ['particle',classifier_column])
-        mask = np.argwhere(classifier_column == classifier)
-        particle_ids = particle_ids[mask]
+    if classifier_column is None:
+        df2 = df2.loc[:, ['x', 'y', 'particle']]
+        particle_ids = df2.loc[f,'particle'].values
+    else:
+        classifier_select = df2.loc[f, classifier_column]
+        df2 = df2.loc[:, ['x', 'y', 'particle', classifier_column]]
+        particle_ids = df2.loc[f, 'particle'].values
+        particle_ids=particle_ids[classifier_select == classifier]
+        
+    df3 = df2.set_index('particle','frame').sort_index()
 
     colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
     colours = colourmap(colour_data, cmap_type=cmap_type, cmax_max=cmax_max)
+    thickness = get_param_val(parameters[method_key]['thickness'])
 
-    #print(particle_ids)
     for index, particle in enumerate(particle_ids):
-        traj_pts= df[df['particle'] == particle][[y,x]]
-        traj_pts=check_traj_length(traj_pts, start=traj_length[0] + f, end=traj_length[1] + f)
-        print('traj')
-        print(particle)
-        frame = cv2.polylines(frame,
-                              [traj_pts[[x,y]].values],
-                              False,
-                              colours[index],
-                              parameters[method_key]['thickness'])
+        traj_pts = df3.loc[particle].values
+        traj_pts = np.array(traj_pts, np.int32).reshape((-1,1,2))
+
+        frame = cv2.polylines(frame,[traj_pts],False,colours[index],thickness)
 
     return frame
 
-def check_traj_length(traj_pts, start=None, end=None):
-    try:
-        traj_pts = traj_pts[start:end]
-    except:
-        if start not in traj_pts.index:
-            start = traj_pts.index[0]
-        if end not in traj_pts.index:
-            end=traj_pts.index[-1]
-        traj_pts = traj_pts[start:end]
-    traj_pts=traj_pts.dropna()
-    return traj_pts
-
-
-
-
-
-
-    return traj_pts

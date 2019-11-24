@@ -100,4 +100,5 @@ def classify(data, parameters=None, call_num=None):
     method_key = get_method_key('classify', call_num)
     column = parameters[method_key]['column_name']
     output_name=parameters[method_key]['output_name']
+    data[output_name] = 1
     return data

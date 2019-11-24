@@ -14,7 +14,7 @@ preprocess = {
     }
 
 track = {
-    'track method':'trackpy',
+    'track_method':'trackpy',
     'trackpy':{'size_estimate':[19,1, 101,2],
                 'invert':[0,0,1,1]
                }
@@ -73,7 +73,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('particle_values','trajectories',),
+    'annotate_method': ('trajectories',),
     'videowriter':'opencv',
     'text_label':{'text':'Mike',
                  'position':(100,100),
@@ -96,7 +96,7 @@ annotate = {
                'cmap_type':'continuous',
                'cmap_column':'x',#None
                'cmap_max':[300,1,2000,1],
-               'thickness':2
+               'thickness':1
                },
     'boxes':{'radius':10,
                'cmap_type':'continuous',
@@ -130,10 +130,10 @@ annotate = {
 
     'trajectories':{'x_column':'x',
                     'y_column':'y',
-                    'traj_length':(-25,0),
+                    'traj_length': [10,0,100,1],
                     'classifier_column':None,
-                    'classifier':None,
-                    'cmap_type':'continuous',
+                    'classifier': 1,
+                    'cmap_type':'discrete',
                     'cmap_column':'x',#None
                     'cmap_max':[200,1,2000,1],
                     'thickness':2

@@ -30,18 +30,29 @@ class PTWorkflow:
         self.cap = ReadCropVideo(parameters=self.parameters['crop'], filename=self.video_filename)
         self.frame=self.cap.read_next_frame()
 
+        if ~self.crop_select:
+            self.parameters.pop('crop')
         if self.preprocess_select:
             self.ip = preprocessing.Preprocessor(self.parameters['preprocess'])
         else:
             self.ip = None
+            self.parameters.pop('preprocess')
         if self.track_select:
             self.pt = tracking.ParticleTracker(parameters=self.parameters['track'], preprocessor=self.ip, vidobject=self.cap, data_filename=self.data_filename)
+        else:
+            self.parameters.pop('track')
         if self.link_select:
             self.link = linking.LinkTrajectory(data_filename=self.data_filename, parameters=self.parameters['link'])
+        else:
+            self.parameters.pop('link')
         if self.postprocess_select:
             self.pp = postprocessing.PostProcessor(data_filename=self.data_filename, parameters=self.parameters['postprocess'])
+        else:
+            self.parameters.pop('postprocess')
         if self.annotate_select:
             self.an = annotation.TrackingAnnotator(vidobject=self.cap, data_filename=self.data_filename, parameters=self.parameters['annotate'])
+        else:
+            self.parameters.pop('annotate')
 
     def process(self):
         if self.track_select:

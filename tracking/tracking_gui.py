@@ -10,13 +10,18 @@ class TrackingGui(ParamGui):
         self.read_slideable_parameters()
         ParamGui.__init__(self, self.tracker.frame)
 
+
     def read_slideable_parameters(self):
         parameters = self.tracker.parameters
         self.param_dict = {}
-        for key in parameters:
-            paramsubset = parameters[key]
 
-            for subkey in paramsubset:
+        for key in parameters:
+            print(key)
+            paramsubset = parameters[key]
+            print(paramsubset)
+            paramsubset[key+'_method']
+            for subkey in paramsubset[key+'_method']:
+                print(subkey)
                 if type(paramsubset[subkey]) == dict:
                     paramsubsubset = paramsubset[subkey]
                     for subsubkey in paramsubsubset:
@@ -31,7 +36,7 @@ class TrackingGui(ParamGui):
         parameters = self.tracker.parameters
         for key in parameters:
             paramsubset = parameters[key]
-            for subkey in paramsubset:
+            for subkey in paramsubset[key+'_method']:
                 if type(paramsubset[subkey]) == dict:
                     paramsubsubset=paramsubset[subkey]
                     for subsubkey in paramsubsubset:
