@@ -6,10 +6,7 @@ import skimage
 import trackpy as tp
 from ParticleTrackingSimple.general.parameters import get_param_val
 
-def distance_transform(frame, parameters=None):
-    dist = cv2.distanceTransform(frame, cv2.DIST_L2, 5)
-    display(dist/np.max(dist))
-    return dist
+
 
 def track_big_blob(frame, parameters=None):
     contours = images.find_contours(frame)
@@ -27,4 +24,17 @@ def track_big_blob(frame, parameters=None):
 def trackpy(frame, parameters=None):
     df = tp.locate(frame, get_param_val(parameters['trackpy']['size_estimate']), invert=get_param_val(parameters['trackpy']['invert']))
     return df
+
+def hough(frame, parameters=None):
+    pass
+    return df
+
+def contours(frame, parameters=None):
+    pass
+    return df
+
+def distance(frame, parameters=None):
+   dist = cv2.distanceTransform(frame, cv2.DIST_L2, 5)
+   display(dist / np.max(dist))
+   return dist
 
