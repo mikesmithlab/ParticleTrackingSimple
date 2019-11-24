@@ -138,7 +138,7 @@ def threshold(frame, parameters=None, call_num=None):
 
     option:
     parameters['threshold'] : sets the value of the cutoff threshold
-    parameters['threshold mode] : Can be used to invert the above behaviour
+    parameters['mode] : Can be used to invert the above behaviour
 
     :param frame: grayscale img
     :param parameters: parameters dictionary
@@ -149,7 +149,7 @@ def threshold(frame, parameters=None, call_num=None):
     params = parameters[method_key]
 
     threshold = get_param_val(params['threshold'])
-    mode = get_param_val(params['threshold mode'])
+    mode = get_param_val(params['mode'])
     ret, out = cv2.threshold(frame,threshold,255,mode)
     return out
 
@@ -203,7 +203,7 @@ def blur(frame, parameters=None, call_num=None):
     method_key = get_method_key('blur', call_num=call_num)
     params = parameters[method_key]
 
-    kernel = get_param_val(parameters['blur_kernel'])
+    kernel = get_param_val(params['kernel'])
     out = cv2.GaussianBlur(frame, (kernel, kernel), 0)
     return out
 
@@ -225,11 +225,11 @@ def medianblur(frame, parameters=None, call_num=None):
     method_key = get_method_key('medianblur', call_num=call_num)
     params = parameters[method_key]
 
-    kernel = get_param_val(parameters['blur_kernel'])
+    kernel = get_param_val(params['kernel'])
     out = cv2.medianBlur(frame, (kernel,kernel))
     return out
 
-def adjust_gamma(image, parameters=None, call_num=None):
+def gamma(image, parameters=None, call_num=None):
     '''
     Gamma correction
 
@@ -242,7 +242,7 @@ def adjust_gamma(image, parameters=None, call_num=None):
 
     :return: image
     '''
-    method_key = get_method_key('adjust_gamma', call_num=call_num)
+    method_key = get_method_key('gamma', call_num=call_num)
     params = parameters[method_key]
 
     gamma = get_param_val(params['gamma'])/100.0
@@ -272,6 +272,6 @@ def resize(frame, parameters=None, call_num=None):
     method_key = get_method_key('resize', call_num=call_num)
     params = parameters[method_key]
 
-    scale = get_param_val(params['resize_scale'])
+    scale = get_param_val(params['scale'])/100
     return cv2.resize(frame, scale)
 

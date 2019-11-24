@@ -1,30 +1,46 @@
 from ParticleTrackingSimple.project import PTWorkflow
 
 crop = {'crop_method': 'crop_box',
-        'crop_coords': (254, 92, 864, 529),#None,
+        'crop_coords': (254, 92, 864, 529),
         'mask': None
         }
 
 preprocess = {
     'preprocessor_method': ('grayscale','adaptive_threshold'),
-    'adaptive_threshold':{'block_size': 81,#[81, 3, 101, 2],
-                           'C': [12, -30, 30, 1],
-                            'mode': [1, 0, 1, 1]
-                          }
+    'grayscale':{},
+    'threshold':{'threshold':[1,0,255,1],
+                 'mode':[0,0,1,1]},
+    'adaptive_threshold':{'block_size': 81,
+                          'C': [12, -30, 30, 1],
+                          'mode': [1, 0, 1, 1]
+                          },
+    'blur':{'kernel':[1,1,15,2]},
+    'medianblur':{'kernel':[1,1,15,2]},
+    'gamma':{'gamma':[1,0,100,1]},
+    'resize':{'scale':[1,0,500,1]},
+    'subtract_bkg':{},
+    'variance':{},
+    'flip':{},
+
+
+
     }
 
 track = {
     'track_method':'trackpy',
     'trackpy':{'size_estimate':[19,1, 101,2],
                 'invert':[0,0,1,1]
-               }
+               },
+    'hough':{},
+    'contours':{},
+    'distance':{}
     }
 
 link = {
     'link_method':'default',
     'default':{'search_range': 10,
                 'pos_columns':None,
-                'max_frame_displacement': 10,#
+                'max_frame_displacement': 10,
                 'memory': 3,
                 'min_frame_life': 1
                 #
@@ -73,7 +89,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('trajectories',),
+    'annotate_method': ('circles',),
     'videowriter':'opencv',
     'text_label':{'text':'Mike',
                  'position':(100,100),
@@ -181,14 +197,13 @@ class PTProject(PTWorkflow):
     '''
 
     def __init__(self, video_filename=None):
-        #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
         self.crop_select = False
         self.preprocess_select = False
         self.track_select = False
-        self.link_select=False
-        self.postprocess_select =False
+        self.link_select = False
+        self.postprocess_select = False
         self.annotate_select = True
 
         self.parameters = PARAMETERS

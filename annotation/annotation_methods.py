@@ -190,7 +190,6 @@ def trajectories(frame, data, f, parameters=None, call_num=None):
     df['frame'] = df.index
     df2 = df.loc[f-traj_length:f]
 
-
     classifier_column = parameters[method_key]['classifier_column']
     classifier = parameters[method_key]['classifier']
 
@@ -202,7 +201,7 @@ def trajectories(frame, data, f, parameters=None, call_num=None):
         df2 = df2.loc[:, ['x', 'y', 'particle', classifier_column]]
         particle_ids = df2.loc[f, 'particle'].values
         particle_ids=particle_ids[classifier_select == classifier]
-        
+
     df3 = df2.set_index('particle','frame').sort_index()
 
     colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
