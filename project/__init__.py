@@ -74,7 +74,7 @@ class PTWorkflow:
         if self.track_select:
             self.pt.track(f_index=frame_num)
         if self.postprocess_select:
-            self.pp
+            self.pp.process(f_index=frame_num)
         if self.annotate_select:
             annotatedframe=self.an.annotate(f_index=frame_num)
         else:

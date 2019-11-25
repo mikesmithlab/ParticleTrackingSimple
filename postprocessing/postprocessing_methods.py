@@ -1,5 +1,9 @@
+import pandas as pd
 import numpy as np
+from ParticleTrackingSimple.general import dataframes
+import trackpy as tp
 from ParticleTrackingSimple.general.parameters import get_method_key
+import scipy.spatial as sp
 
 
 def smooth(data, parameters=None, call_num=None):
@@ -92,9 +96,22 @@ def angle(data, parameters=None, call_num=None):
     return data
 
 def neighbours(data, parameters=None, call_num=None,):
+    #https: // docs.scipy.org / doc / scipy / reference / generated / scipy.spatial.Delaunay.html
     method_key = get_method_key('neighbours', call_num)
-    pass
+    data['neighbours']=np.NaN
+    data = data.groupby('frame').apply(find_neighbours())
+
+
     return data
+
+def find_neighbours(df, parameters=None):
+    points = df[['x', 'y']].values
+    tess = sp.Delaunay(points)
+    list_indices, point_indices = tess.vertex_neighbor_vertices
+    neighbour_ids = [list_indices[a:b].tolist() for a, b in zip(list_indices[:-1], list_indices[1:])]
+    df['neighbours'] = neighbour_ids
+    return df
+
 
 def classify(data, parameters=None, call_num=None):
     method_key = get_method_key('classify', call_num)

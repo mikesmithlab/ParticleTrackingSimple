@@ -48,7 +48,7 @@ link = {
     }
 
 postprocess = {
-    'postprocess_method': ('classify'),
+    'postprocess_method': ('neighbours',),
     'smooth':{'column_name':'y',
               'output_name':'y_smooth',
               'span':5,
@@ -80,12 +80,12 @@ postprocess = {
             'fps':50.0,
             'method':'finite_difference'
               },
-    'neighbours':{'method':'voronoi'
-
-    },
-    'classify':{'column_name':'v',
+    'neighbours':{'method':'delaunay'
+                },
+    'classify':{'column_name':'y',
                 'output_name':'classify',
-                'bin_edges':(0,1,2)}
+                'bin_norm':True,
+                'bin_edges':[0,0.1,0.5,1]}
     }
 
 annotate = {
@@ -197,14 +197,14 @@ class PTProject(PTWorkflow):
     '''
 
     def __init__(self, video_filename=None):
+        #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
         self.crop_select = False
         self.preprocess_select = False
         self.track_select = False
-        self.link_select = False
-        self.postprocess_select = False
-        self.annotate_select = True
+        self.postprocess_select = True
+        self.annotate_select = False
 
         self.parameters = PARAMETERS
 

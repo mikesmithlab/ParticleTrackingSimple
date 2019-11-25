@@ -16,12 +16,9 @@ class TrackingGui(ParamGui):
         self.param_dict = {}
 
         for key in parameters:
-            print(key)
             paramsubset = parameters[key]
-            print(paramsubset)
             paramsubset[key+'_method']
             for subkey in paramsubset[key+'_method']:
-                print(subkey)
                 if type(paramsubset[subkey]) == dict:
                     paramsubsubset = paramsubset[subkey]
                     for subsubkey in paramsubsubset:
