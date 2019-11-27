@@ -121,13 +121,19 @@ def circles(frame, data, f, parameters=None, call_num=None):
         data.add_particle_property('r', get_param_val(parameters[method_key]['radius']))
 
     thickness = get_param_val(parameters[method_key]['thickness'])
-    circles = data.get_info(f, ['x', 'y', 'r'])
+
+    circles = data.df.loc[f, ['x', 'y', 'r']].values
+    print(circles)
 
     colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
     colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
 
     for i, circle in enumerate(circles):
-        frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
+        try:
+            frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
+        except:
+            print('Failed plotting circle, check data is valid')
+            print(circle)
     return frame
 
 #Not yet working
@@ -146,9 +152,23 @@ def contours(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('contours', call_num=call_num)
     return annotated_frame
 
-def network(frame, data, f, parameters=None, call_num=None):
-    method_key = get_method_key('network', call_num=call_num)
-    return annotated_frame
+def networks(frame, data, f, parameters=None, call_num=None):
+    method_key = get_method_key('networks', call_num=call_num)
+    df = data.df.loc[f]
+    df=df.set_index('particle')
+    particle_ids = df.index.values
+    colour = parameters[method_key]['colour']
+    thickness = parameters[method_key]['thickness']
+    for index, particle in enumerate(particle_ids):
+        pt = df.loc[particle, ['x', 'y']].values
+        pt1 = (int(pt[0]), int(pt[1]))
+        # neighbour_ids = df['neighbours'].loc(particle)
+        neighbour_ids = df.loc[particle, 'neighbours']
+        for index2, neighbour in enumerate(neighbour_ids):
+            pt = df.loc[neighbour, ['x','y']].values
+            pt2 = (int(pt[0]), int(pt[1]))
+            frame = cv2.line(frame,pt1, pt2, colour, thickness, lineType=cv2.LINE_AA)
+    return frame
 '''
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------

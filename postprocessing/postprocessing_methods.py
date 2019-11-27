@@ -1,18 +1,15 @@
-import pandas as pd
 import numpy as np
-from ParticleTrackingSimple.general import dataframes
-import trackpy as tp
-from ParticleTrackingSimple.general.parameters import get_method_key
+from ParticleTrackingSimple.general.parameters import get_method_key, get_param_val
 import scipy.spatial as sp
 
 
-def smooth(data, parameters=None, call_num=None):
-    method_key = get_method_key('smooth', call_num)
-    #Rolling average smoothing param.
-    pass
-    return data
+'''
+-----------------------------------------------------------------------------------------------------
+All these methods operate on all frames simultaneously
+-------------------------------------------------------------------------------------------------------
+'''
 
-def difference(data, parameters=None, call_num=None):
+def difference(data, f_index=None, parameters=None, call_num=None):
     '''Returns frame with new column of rolling differences
        The differences are calculated at separations equal
        to span. Where this is not possible the value np.Nan
@@ -29,7 +26,7 @@ def difference(data, parameters=None, call_num=None):
     data.drop(labels='nan',axis=1)
     return data
 
-def rate(data, parameters=None, call_num=None):
+def rate(data, f_index=None, parameters=None, call_num=None):
     '''
     rate function takes an input column and calculates the
     rate of change of the quantity. It takes into account
@@ -66,7 +63,7 @@ def rate(data, parameters=None, call_num=None):
     data.drop(labels=['nan','temp_diff','dt'], axis=1)
     return data
 
-def magnitude(data, parameters=None, call_num=None):
+def magnitude(data, f_index=None, parameters=None, call_num=None):
     method_key=get_method_key('magnitude', call_num)
     columns = parameters[method_key]['column_names']
     output_name = parameters[method_key]['output_name']
@@ -77,7 +74,7 @@ def magnitude(data, parameters=None, call_num=None):
         data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2 + column_data[columns[2]]**2)**0.5
     return data
 
-def angle(data, parameters=None, call_num=None):
+def angle(data, f_index=None, parameters=None, call_num=None):
     '''
     angle assumes you want to calculate from column_data[0] as x and column_data[1] as y
     it uses tan2 so that -x and +y give a different result to +x and -y
@@ -95,27 +92,79 @@ def angle(data, parameters=None, call_num=None):
     data[output_name] = np.arctan2(data[columns[0]]/data[data[columns[1]]])
     return data
 
-def neighbours(data, parameters=None, call_num=None,):
-    #https: // docs.scipy.org / doc / scipy / reference / generated / scipy.spatial.Delaunay.html
-    method_key = get_method_key('neighbours', call_num)
-    data['neighbours']=np.NaN
-    data = data.groupby('frame').apply(find_neighbours())
 
-
-    return data
-
-def find_neighbours(df, parameters=None):
-    points = df[['x', 'y']].values
-    tess = sp.Delaunay(points)
-    list_indices, point_indices = tess.vertex_neighbor_vertices
-    neighbour_ids = [list_indices[a:b].tolist() for a, b in zip(list_indices[:-1], list_indices[1:])]
-    df['neighbours'] = neighbour_ids
-    return df
-
-
-def classify(data, parameters=None, call_num=None):
+def classify(data, f_index=None, parameters=None, call_num=None):
     method_key = get_method_key('classify', call_num)
     column = parameters[method_key]['column_name']
     output_name=parameters[method_key]['output_name']
     data[output_name] = 1
     return data
+
+'''
+--------------------------------------------------------------------------------------------------------------
+All methods below here need to be run on each frame sequentially.
+---------------------------------------------------------------------------------------------------------------
+'''
+
+def _every_frame(data, f_index):
+    if f_index is None:
+        frame_numbers = data['frame'].values
+        start=np.min(frame_numbers)
+        stop=np.max(frame_numbers)
+    else:
+        start=f_index
+        stop=f_index+1
+    return range(start, stop, 1)
+
+
+def neighbours(data, f_index=None, parameters=None, call_num=None,):
+    #https: // docs.scipy.org / doc / scipy / reference / generated / scipy.spatial.Delaunay.html
+    method_key = get_method_key('neighbours', call_num)
+    method = parameters[method_key]['method']
+    data['neighbours'] = np.NaN
+
+    for f in _every_frame(data, f_index):
+        df = data.loc[f]
+        if method == 'delaunay':
+            df =_find_delaunay(df, parameters=parameters)
+        elif method == 'kdtree':
+            df =_find_kdtree(df, parameters=parameters)
+        data.loc[f] = df
+    return data
+
+def _find_kdtree(df, parameters=None):
+    method_key = get_method_key('neighbours')
+    cutoff = get_param_val(parameters[method_key]['cutoff'])
+    num_neighbours = get_param_val(parameters[method_key]['neighbours'])
+
+    points = df[['x', 'y']].values
+    particle_ids = df[['particle']].values.flatten()
+    tree = sp.KDTree(points)
+    _, indices = tree.query(points, k=num_neighbours+1, distance_upper_bound=cutoff)
+    neighbour_ids = []
+    fill_val = np.size(particle_ids)
+    for index, row in enumerate(indices):
+        neighbour_ids.append([particle_ids[row[i+1]] for i in range(num_neighbours) if row[i+1] != fill_val])
+    df.loc[:, ['neighbours']] = neighbour_ids
+    return df
+
+def _find_delaunay(df, parameters=None, call_num=None):
+    method_key = get_method_key('neighbours')
+    cutoff = get_param_val(parameters[method_key]['cutoff'])
+
+    points = df[['x', 'y']].values
+    particle_ids = df[['particle']].values.flatten()
+    tess = sp.Delaunay(points)
+    list_indices, point_indices = tess.vertex_neighbor_vertices
+    # neighbour_ids = [particle_ids[point_indices[a:b].tolist()] for a, b in zip(list_indices[:-1], list_indices[1:])]
+    neighbour_ids = [point_indices[a:b].tolist() for a, b in zip(list_indices[:-1], list_indices[1:])]
+    dist = sp.distance.squareform(sp.distance.pdist(points))
+
+    neighbour_dists = [(dist[i, row]<cutoff).tolist() for i, row in enumerate(neighbour_ids)]
+    indices = []
+    for index, row in enumerate(neighbour_ids):
+        indices.append([particle_ids[neighbour_ids[index][j]] for j,dummy in enumerate(row) if neighbour_dists[index][j]])
+    df.loc[:, ['neighbours']] = indices
+    return df
+
+

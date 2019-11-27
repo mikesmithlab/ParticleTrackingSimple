@@ -2,6 +2,7 @@ import os
 from tqdm import tqdm
 from ParticleTrackingSimple.general import dataframes
 from ParticleTrackingSimple.tracking import tracking_methods as tm
+from ParticleTrackingSimple.general.parameters import get_method_name
 
 class ParticleTracker:
     """
@@ -60,10 +61,6 @@ class ParticleTracker:
         self.data_filename = self.filename + '.hdf5'
 
     def track(self, f_index=None):
-        """Call this to start tracking"""
-        self._track_process(0, f_index=f_index)
-
-    def _track_process(self, group_number, f_index=None):
         """
         Method called by track.
 
@@ -93,11 +90,12 @@ class ParticleTracker:
 
     def analyse_frame(self):
         frame = self.cap.read_next_frame()
-        method = self.parameters['track method']
+        method = self.parameters['track_method'][0]
         if self.ip is None:
             preprocessed_frame = frame
         else:
             preprocessed_frame = self.ip.process(frame)
+        print(method)
         df_frame = getattr(tm, method)(preprocessed_frame, self.parameters)
         return df_frame
 

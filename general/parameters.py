@@ -27,3 +27,4 @@ def get_method_key(method, call_num=None):
     else:
         method_key = method + '*' + call_num
     return method_key
+

@@ -6,7 +6,7 @@ crop = {'crop_method': 'crop_box',
         }
 
 preprocess = {
-    'preprocessor_method': ('grayscale','adaptive_threshold'),
+    'preprocess_method': ('grayscale',),
     'grayscale':{},
     'threshold':{'threshold':[1,0,255,1],
                  'mode':[0,0,1,1]},
@@ -27,11 +27,16 @@ preprocess = {
     }
 
 track = {
-    'track_method':'trackpy',
+    'track_method':('hough',),
     'trackpy':{'size_estimate':[19,1, 101,2],
                 'invert':[0,0,1,1]
                },
-    'hough':{},
+    'hough':{'min_dist':[10,1,201,2],
+              'p1':[10, 1, 201,2],
+              'p2':[10, 1, 201,2],
+              'min_rad':[10, 1, 201,2],
+              'max_rad':[10, 1, 201,2]
+             },
     'contours':{},
     'distance':{}
     }
@@ -80,7 +85,9 @@ postprocess = {
             'fps':50.0,
             'method':'finite_difference'
               },
-    'neighbours':{'method':'delaunay'
+    'neighbours':{'method':'delaunay',
+                  'neighbours':6,
+                  'cutoff':[50,1,200,1],
                 },
     'classify':{'column_name':'y',
                 'output_name':'classify',
@@ -110,8 +117,8 @@ annotate = {
                         },
     'circles':{'radius':10,
                'cmap_type':'continuous',
-               'cmap_column':'x',#None
-               'cmap_max':[300,1,2000,1],
+               'cmap_column':None,#'x'
+               'cmap_max':300,#[300,1,2000,1],
                'thickness':1
                },
     'boxes':{'radius':10,
@@ -122,14 +129,11 @@ annotate = {
                },
     'contours':{'radius':10,
                'cmap_type':'continuous',
-               'cmap_column':'x',#None
+               'cmap_column':'x',#Nonedf['neighbours'].loc(particle)
                'cmap_max':[1,1,2000,1],
                'thickness':2
                },
-    'networks':{'radius':10,
-               'cmap_type':'continuous',
-               'cmap_column':'x',#None
-               'cmap_max':[1,1,2000,1],
+    'networks':{'colour':(0,255,0),
                'thickness':2
                },
 
@@ -200,11 +204,12 @@ class PTProject(PTWorkflow):
         #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = False
-        self.preprocess_select = False
-        self.track_select = False
-        self.postprocess_select = True
-        self.annotate_select = False
+        self.crop_select = True
+        self.preprocess_select = True
+        self.track_select = True
+        self.link_select = False
+        self.postprocess_select = False
+        self.annotate_select = True
 
         self.parameters = PARAMETERS
 

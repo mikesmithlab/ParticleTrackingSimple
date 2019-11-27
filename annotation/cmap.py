@@ -13,9 +13,16 @@ def cmap_variables(data, f, parameters, method=None):
 
     :return: Numpy array of data to be used in colour coding, type of colour map, maximum value to scale data.
     '''
-    colour_data = data.get_info(f, parameters[method]['cmap_column'])
-    cmap_type = parameters[method]['cmap_type']
-    cmax_max = get_param_val(parameters[method]['cmap_max'])
+    cmap_column = parameters[method]['cmap_column']
+    if cmap_column is None:
+        sz = np.shape(data.df.loc[f].index.values)
+        colour_data = np.zeros(sz)
+        cmap_type='discrete'
+        cmax_max = 1
+    else:
+        colour_data = data.get_info(f, cmap_column)
+        cmap_type = parameters[method]['cmap_type']
+        cmax_max = get_param_val(parameters[method]['cmap_max'])
     return colour_data, cmap_type, cmax_max
 
 def colourmap(colour_data, cmap_type=None, cmax_max=None):

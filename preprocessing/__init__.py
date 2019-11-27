@@ -19,7 +19,7 @@ class Preprocessor:
         '''
         Preprocesses single frame
         '''
-        for method in self.parameters['preprocessor_method']:
+        for method in self.parameters['preprocess_method']:
             method_name, call_num = get_method_name(method)
             frame = getattr(pm, method_name)(frame, self.parameters, call_num=call_num)
         return frame
