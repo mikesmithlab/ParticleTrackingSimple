@@ -2,7 +2,7 @@ from Generic.images import ParamGui
 from Generic.images.basics import stack_3, display
 import numpy as np
 
-class TrackingGui(ParamGui):
+class Gui(ParamGui):
 
     def __init__(self, tracker):
         self.grayscale = True
@@ -63,5 +63,5 @@ if __name__ == "__main__":
         tracker = ExampleChild(file)
     else:
         tracker = JamesPT(file)
-    gui = TrackingGui(tracker)
+    gui = Gui(tracker)
 

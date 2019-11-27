@@ -123,7 +123,6 @@ def circles(frame, data, f, parameters=None, call_num=None):
     thickness = get_param_val(parameters[method_key]['thickness'])
 
     circles = data.df.loc[f, ['x', 'y', 'r']].values
-    print(circles)
 
     colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
     colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
@@ -136,21 +135,19 @@ def circles(frame, data, f, parameters=None, call_num=None):
             print(circle)
     return frame
 
-#Not yet working
 def boxes(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('boxes', call_num=call_num)
-    #Requires a column classifying traj with corresponding colour
     box = data.get_info(f, 'box')
     classifiers = data.get_info(f,'classifier')
-    for index, classifier in enumerate(classifiers):
-       annotated_frame = draw_contours(frame, [
-                                 box[index]], col=get_param_val(parameters['colors'])[classifier],
-                                       thickness=get_param_val(parameters['contour thickness']))
-    return annotated_frame
+    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
+    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
 
-def contours(frame, data, f, parameters=None, call_num=None):
-    method_key = get_method_key('contours', call_num=call_num)
-    return annotated_frame
+    for index, classifier in enumerate(classifiers):
+       frame = draw_contours(frame, [box[index]], col=colours[index],
+                                       thickness=get_param_val(parameters[method_key]['thickness']))
+    return frame
+
+
 
 def networks(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('networks', call_num=call_num)

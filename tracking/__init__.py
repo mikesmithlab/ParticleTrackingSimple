@@ -95,7 +95,7 @@ class ParticleTracker:
             preprocessed_frame = frame
         else:
             preprocessed_frame = self.ip.process(frame)
-        print(method)
+
         df_frame = getattr(tm, method)(preprocessed_frame, self.parameters)
         return df_frame
 
