@@ -12,6 +12,7 @@ class PTWorkflow:
         #Load video_crop file, load dataframe, load config
         #create video_crop object
         self.video_filename=video_filename
+
         self.filename=os.path.splitext(self.video_filename)[0]
         self.data_filename=self.filename + '.hdf5'
 
@@ -25,15 +26,18 @@ class PTWorkflow:
 
         self.parameters = {}
 
+
     def _setup(self):
         '''Create classes that will be used'''
+        self.parameters['experiment']['video_filename'] = self.video_filename
+
         self.cap = ReadCropVideo(parameters=self.parameters['crop'], filename=self.video_filename)
         self.frame=self.cap.read_next_frame()
 
         if ~self.crop_select:
             self.parameters.pop('crop')
         if self.preprocess_select:
-            self.ip = preprocessing.Preprocessor(self.parameters['preprocess'])
+            self.ip = preprocessing.Preprocessor(self.parameters)
         else:
             self.ip = None
             self.parameters.pop('preprocess')

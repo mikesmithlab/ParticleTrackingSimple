@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from ParticleTrackingSimple.general.parameters import  get_param_val, get_method_key
 from ParticleTrackingSimple.general.imageformat import bgr_2_grayscale
-
+from Generic.images.basics import display
 
 def distance(frame, parameters=None, call_num=None):
     '''
@@ -35,7 +35,16 @@ def grayscale(frame, parameters=None, call_num=None):
 
     :return: A grayscale image
     '''
-    return bgr_2_grayscale(frame)
+    """Converts a BGR image to grayscale"""
+    sz = np.shape(frame)
+    if np.shape(sz)[0] == 3:
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    elif np.shape(sz)[0] == 2:
+        print('Image is already grayscale')
+        return frame
+    else:
+        print('Something went wrong! Shape img not recognised')
+        return frame
 
 def subtract_bkg(frame, parameters=None, call_num=None):
     '''
@@ -54,25 +63,34 @@ def subtract_bkg(frame, parameters=None, call_num=None):
 
     :return: image with background image subtracted
     '''
+    method_key = get_method_key('subtract_bkg', call_num=call_num)
+    params = parameters['preprocess'][method_key]
 
-
-    if parameters['subtract bkg type'] == 'mean':
+    if params['subtract bkg type'] == 'mean':
         mean_val = int(np.mean(frame))
         subtract_frame = mean_val * np.ones(np.shape(frame), dtype=np.uint8)
-    elif parameters['subtract bkg type'] == 'img':
+    elif params['subtract bkg type'] == 'img':
         temp_params = {}
-        temp_params['blur kernel'] = parameters['subtract blur kernel'].copy()
+        params['subtract_bkg_blur_kernel']
+        temp_params['preprocess'] = {}
+        temp_params['preprocess']['kernel'] = get_param_val(params['variance_blur_kernel'])
+
         # This option subtracts the previously created image which is added to dictionary.
-        subtract_frame = parameters['bkg_img']
+        if parameters['experiment']['bkg_img'] is None:
+            name = parameters['experiment']['video_filename']
+
+            subtract_frame = cv2.imread(name[:-4] + '_bkg_img')
+        else:
+            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
+
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
 
     frame = cv2.subtract(subtract_frame, frame)
 
-    if parameters['subtract bkg norm'] == True:
+    if params['subtract bkg norm'] == True:
         frame = cv2.normalize(frame, None, alpha=0, beta=255,
                               norm_type=cv2.NORM_MINMAX)
-
     return frame
 
 def variance(frame, parameters=None, call_num=None):
@@ -86,7 +104,15 @@ def variance(frame, parameters=None, call_num=None):
     parameters['variance type'] == 'mean' : Returns the absolute difference from the mean
                                             img value
     parameters['variance type'] == 'img'  : Returns the absolute difference from a supplied
-                                            bkg img. Bkg img is stored in parameters['bkg_img'].
+                                            bkg img. Bkg img is read into parameters['bkg_img'].
+                                            bkg img must be in the same folder as the processed
+                                            video with name = {video_name}_bkgimg.png
+                                            A helpful script meanbkg_img.py can be used to average
+                                            all the frames of a video together. If you have lots
+                                            of small objects moving around and the video is long
+                                            enough you can get a pretty good background estimate
+                                            without having to take a bkg.
+
     parameters['variance bkg norm'] == True: will stretch the range of the largest difference to 255
 
     :param frame: grayscale image
@@ -94,17 +120,25 @@ def variance(frame, parameters=None, call_num=None):
 
     :return: image of absolute difference from mean
     '''
+    method_key = get_method_key('variance', call_num=call_num)
+    params = parameters['preprocess'][method_key]
 
-    if parameters['variance type'] == 'mean':
+
+    if params['variance_type'] == 'mean':
         mean_val = int(np.mean(frame))
         subtract_frame = mean_val*np.ones(np.shape(frame), dtype=np.uint8)
-    elif parameters['variance type'] == 'img':
+    elif params['variance_type'] == 'img':
         temp_params = {}
-        temp_params['blur kernel'] = get_param_val(parameters['variance blur kernel'].copy())
-        subtract_frame = parameters['bkg_img']
+        temp_params['preprocess'] = {'blur':{'kernel':get_param_val(params['variance_blur_kernel'])}}
+        if parameters['experiment']['bkg_img'] is None:
+            name = parameters['experiment']['video_filename']
+            subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png',-1)
+            print(np.shape(subtract_frame))
+        else:
+            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
-    elif parameters['variance type'] == 'zeros':
+    elif params['variance_type'] == 'zeros':
         subtract_frame = np.zeros(np.shape(frame))
 
     frame1 = cv2.subtract(subtract_frame, frame)
@@ -113,7 +147,7 @@ def variance(frame, parameters=None, call_num=None):
     frame2 = cv2.normalize(frame2, frame2,0,255,cv2.NORM_MINMAX)
     frame = cv2.add(frame1, frame2)
 
-    if parameters['variance bkg norm'] == True:
+    if params['variance_bkg_norm'] == True:
         frame = cv2.normalize(frame, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
 
     return frame
@@ -146,7 +180,7 @@ def threshold(frame, parameters=None, call_num=None):
     :return: binary image
     '''
     method_key = get_method_key('threshold', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     threshold = get_param_val(params['threshold'])
     mode = get_param_val(params['mode'])
@@ -173,7 +207,7 @@ def adaptive_threshold(frame, parameters=None, call_num=None):
     :return: binary image
     '''
     method_key = get_method_key('adaptive_threshold', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     block = get_param_val(params['block_size'])
     const = get_param_val(params['C'])
@@ -201,10 +235,11 @@ def blur(frame, parameters=None, call_num=None):
     :return: blurred image
     '''
     method_key = get_method_key('blur', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     kernel = get_param_val(params['kernel'])
     out = cv2.GaussianBlur(frame, (kernel, kernel), 0)
+
     return out
 
 def medianblur(frame, parameters=None, call_num=None):
@@ -223,7 +258,7 @@ def medianblur(frame, parameters=None, call_num=None):
     :return: blurred image
     '''
     method_key = get_method_key('medianblur', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     kernel = get_param_val(params['kernel'])
     out = cv2.medianBlur(frame, (kernel,kernel))
@@ -243,7 +278,7 @@ def gamma(image, parameters=None, call_num=None):
     :return: image
     '''
     method_key = get_method_key('gamma', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     gamma = get_param_val(params['gamma'])/100.0
     # build a lookup table mapping the pixel values [0, 255] to
@@ -270,7 +305,7 @@ def resize(frame, parameters=None, call_num=None):
     :return: image
     '''
     method_key = get_method_key('resize', call_num=call_num)
-    params = parameters[method_key]
+    params = parameters['preprocess'][method_key]
 
     scale = get_param_val(params['scale'])/100
     return cv2.resize(frame, scale)

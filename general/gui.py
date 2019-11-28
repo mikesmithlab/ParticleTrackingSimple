@@ -16,15 +16,16 @@ class Gui(ParamGui):
         self.param_dict = {}
 
         for key in parameters:
-            paramsubset = parameters[key]
-            paramsubset[key+'_method']
-            for subkey in paramsubset[key+'_method']:
-                if type(paramsubset[subkey]) == dict:
-                    paramsubsubset = paramsubset[subkey]
-                    for subsubkey in paramsubsubset:
-                        value = paramsubsubset[subsubkey]
-                        if type(value) == list:
-                            self.param_dict[subsubkey] = value
+            if key is not 'experiment':
+                paramsubset = parameters[key]
+                paramsubset[key+'_method']
+                for subkey in paramsubset[key+'_method']:
+                    if type(paramsubset[subkey]) == dict:
+                        paramsubsubset = paramsubset[subkey]
+                        for subsubkey in paramsubsubset:
+                            value = paramsubsubset[subsubkey]
+                            if type(value) == list:
+                                self.param_dict[subsubkey] = value
         self.param_dict['frame'] = [0, 0, self.tracker.cap.num_frames-1, 1]
         self.update_slideable_parameters()
         return self.param_dict
@@ -32,13 +33,14 @@ class Gui(ParamGui):
     def update_slideable_parameters(self):
         parameters = self.tracker.parameters
         for key in parameters:
-            paramsubset = parameters[key]
-            for subkey in paramsubset[key+'_method']:
-                if type(paramsubset[subkey]) == dict:
-                    paramsubsubset=paramsubset[subkey]
-                    for subsubkey in paramsubsubset:
-                        if subsubkey in self.param_dict.keys():
-                            paramsubsubset[subsubkey] = self.param_dict[subsubkey]
+            if key is not 'experiment':
+                paramsubset = parameters[key]
+                for subkey in paramsubset[key+'_method']:
+                    if type(paramsubset[subkey]) == dict:
+                        paramsubsubset=paramsubset[subkey]
+                        for subsubkey in paramsubsubset:
+                            if subsubkey in self.param_dict.keys():
+                                paramsubsubset[subsubkey] = self.param_dict[subsubkey]
 
 
     def update(self):

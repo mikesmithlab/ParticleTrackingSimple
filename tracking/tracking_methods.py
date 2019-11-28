@@ -10,7 +10,7 @@ import pandas as pd
 
 
 def trackpy(frame, parameters=None, call_num=None):
-    method_key = get_method_key('rate', call_num)
+    method_key = get_method_key('trackpy', call_num)
     df = tp.locate(frame, get_param_val(parameters[method_key]['size_estimate']), invert=get_param_val(parameters[method_key]['invert']))
     return df
 

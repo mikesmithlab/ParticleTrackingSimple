@@ -1,4 +1,4 @@
-from ParticleTrackingSimple.project.example_params import PARAMETERS
+from ParticleTrackingSimple.project.bacteria import PARAMETERS
 from ParticleTrackingSimple.project import PTWorkflow
 
 class PTProject(PTWorkflow):
@@ -50,6 +50,7 @@ class PTProject(PTWorkflow):
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
 
-    track = PTProject(video_filename='/home/mike/Videos/HydrogelTest.m4v')
-    #track.process()
-    Gui(track)
+    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    track = PTProject(video_filename=filename)
+    track.process()
+    #Gui(track)
