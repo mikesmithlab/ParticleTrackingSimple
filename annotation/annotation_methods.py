@@ -221,15 +221,14 @@ def trajectories(frame, data, f, parameters=None, call_num=None):
 
     df3 = df2.set_index('particle','frame').sort_index()
 
-    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
-    colours = colourmap(colour_data, cmap_type=cmap_type, cmax_max=cmax_max)
+    colour = parameters[method_key]['colour']
     thickness = get_param_val(parameters[method_key]['thickness'])
 
     for index, particle in enumerate(particle_ids):
         traj_pts = df3.loc[particle].values
         traj_pts = np.array(traj_pts, np.int32).reshape((-1,1,2))
 
-        frame = cv2.polylines(frame,[traj_pts],False,colours[index],thickness)
+        frame = cv2.polylines(frame,[traj_pts],False,colour,thickness)
 
     return frame
 

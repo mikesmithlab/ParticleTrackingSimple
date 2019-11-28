@@ -52,11 +52,11 @@ track = {
 
 link = {
     'link_method':'default',
-    'default':{'search_range': 10,
+    'default':{'search_range': 15,
                 'pos_columns':None,
                 'max_frame_displacement': 10,
                 'memory': 3,
-                'min_frame_life': 1
+                'min_frame_life': 30
                 #
                 }
     }
@@ -105,7 +105,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('circles', 'text_label',),
+    'annotate_method': ('circles', 'trajectories','text_label',),
     'videowriter':'opencv',
     'text_label':{'text':'Just Particles',
                  'position':(100,100),
@@ -157,13 +157,11 @@ annotate = {
                 },
     'trajectories':{'x_column':'x',
                     'y_column':'y',
-                    'traj_length': [10,0,100,1],
+                    'traj_length': [200,0,100,1],
                     'classifier_column':None,
                     'classifier': 1,
-                    'cmap_type':'discrete',
-                    'cmap_column':'x',#None
-                    'cmap_max':[200,1,2000,1],
-                    'thickness':2
+                    'colour':(50,200,50),
+                    'thickness':1
                }
 
 
