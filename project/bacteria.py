@@ -109,7 +109,7 @@ annotate = {
     'videowriter':'opencv',
     'text_label':{'text':'Just Particles',
                  'position':(100,100),
-                 'font_colour':(0,0,255),
+                 'font_colour':(255,0,0),
                  'font_size':3,
                  'font_thickness':2
                  },
@@ -127,7 +127,7 @@ annotate = {
     'circles':{'radius':6,
                'cmap_type':'continuous',
                'cmap_column':None,#'x'
-               'cmap_max':300,#[300,1,2000,1],
+               'cmap_max':[470,1,2000,1],
                'thickness':2
                },
     'boxes':{'radius':10,

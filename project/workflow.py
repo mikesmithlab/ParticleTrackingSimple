@@ -52,5 +52,5 @@ if '__main__' == __name__:
 
     filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
     track = PTProject(video_filename=filename)
-    #track.process()
-    Gui(track)
+    track.process()
+    #Gui(track)

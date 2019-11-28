@@ -16,13 +16,12 @@ def cmap_variables(data, f, parameters, method=None):
     cmap_column = parameters[method]['cmap_column']
     if cmap_column is None:
         sz = np.shape(data.df.loc[f].index.values)
-        colour_data = np.zeros(sz)
+        colour_data = np.ones(sz)
         cmap_type='discrete'
-        cmax_max = 1
     else:
         colour_data = data.get_info(f, cmap_column)
         cmap_type = parameters[method]['cmap_type']
-        cmax_max = get_param_val(parameters[method]['cmap_max'])
+    cmax_max = get_param_val(parameters[method]['cmap_max'])/100
     return colour_data, cmap_type, cmax_max
 
 def colourmap(colour_data, cmap_type=None, cmax_max=None):
