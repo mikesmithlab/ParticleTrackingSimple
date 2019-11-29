@@ -1,4 +1,3 @@
-from ParticleTrackingSimple.project.bacteria import PARAMETERS
 from ParticleTrackingSimple.project import PTWorkflow
 
 class PTProject(PTWorkflow):
@@ -30,18 +29,18 @@ class PTProject(PTWorkflow):
     What these processes will do is governed by the respective parts of the PARAMETERS dictionary above
     '''
 
-    def __init__(self, video_filename=None):
+    def __init__(self, video_filename=None, params=None):
         #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = True
-        self.preprocess_select = True
-        self.track_select = True
-        self.link_select = False
+        self.crop_select = False
+        self.preprocess_select = False
+        self.track_select = False
+        self.link_select = True
         self.postprocess_select = False
         self.annotate_select = False
 
-        self.parameters = PARAMETERS
+        self.parameters = params
 
         self._setup()
 
@@ -49,8 +48,9 @@ class PTProject(PTWorkflow):
 
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
-    #filename='/media/ppzmis/data/dots.mp4'
-    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/JustParticle001.mp4'
-    track = PTProject(video_filename=filename)
-    #track.process()
-    Gui(track)
+    from ParticleTrackingSimple.project.bacteria import PARAMETERS
+
+    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    track = PTProject(video_filename=filename, params=PARAMETERS)
+    track.process()
+    #Gui(track)

@@ -9,12 +9,19 @@ class LinkTrajectory:
     def link_trajectories(self):
         """Implements the trackpy functions link_df and filter_stubs"""
         # Reload DataStore
-        with dataframes.DataStore(self.data_filename) as data:
+        print('link')
+        data=dataframes.DataStore(self.data_filename, load=True)
+        print(data.df)
+
+        with dataframes.DataStore(self.data_filename, load=True) as data:
             # Trackpy methods
+
+            print(data)
+            print(data.df.head(n=20))
             data.reset_index()
             data.df = trackpy.link_df(data.df,self.parameters['default']['max_frame_displacement'],memory=self.parameters['default']['memory'])
 
             data.df = trackpy.filter_stubs(data.df, self.parameters['default']['min_frame_life'])
             # Save DataStore
-            data.set_frame_index()
+            #data.set_frame_index()
             data.save(filename=self.data_filename)

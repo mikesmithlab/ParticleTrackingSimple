@@ -1,11 +1,8 @@
-from ParticleTrackingSimple.general.parameters import get_param_val
-from ParticleTrackingSimple.annotation.cmap import colour_array
+from ParticleTrackingSimple.general.parameters import get_param_val, get_method_key
+from ParticleTrackingSimple.general.cmap import colour_array
 from ParticleTrackingSimple.general.contours import draw_contours
-from ParticleTrackingSimple.general.parameters import get_method_key
 import cv2
 import numpy as np
-import pandas as pd
-
 
 '''
 --------------------------------------------------------------------------------------

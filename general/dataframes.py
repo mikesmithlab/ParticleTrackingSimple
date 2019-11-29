@@ -16,15 +16,22 @@ class DataStore:
         Dictionary containing any metadata values.
     """
 
-    def __init__(self, filename, load=True):
-        self.df = pd.DataFrame()
-
-        self.metadata = {}
+    def __init__(self, filename, load=False):
         self.filename = os.path.splitext(filename)[0] + '.hdf5'
-        self.save()
         if load:
             self.load()
+        else:
+            self.df = pd.DataFrame()
+            self.metadata = {}
+            self.save()
 
+
+    def load(self):
+        """Load HDFStore"""
+        with pd.HDFStore(self.filename) as store:
+            self.df = store.get('df')
+            self.metadata = store.get_storer('df').attrs.metadata
+        print(self.df)
 
     def __enter__(self):
         return self
@@ -138,11 +145,7 @@ class DataStore:
         """
         return self.df.loc[frame, headings].values
 
-    def load(self):
-        """Load HDFStore"""
-        with pd.HDFStore(self.filename) as store:
-            self.df = store.get('df')
-            self.metadata = store.get_storer('df').attrs.metadata
+
 
     def reset_index(self):
         """Move frame index to column"""

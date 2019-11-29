@@ -3,6 +3,7 @@ from tqdm import tqdm
 from ParticleTrackingSimple.general import dataframes
 from ParticleTrackingSimple.tracking import tracking_methods as tm
 from ParticleTrackingSimple.general.parameters import get_method_name
+import numpy as np
 
 class ParticleTracker:
     """
@@ -70,10 +71,7 @@ class ParticleTracker:
             Sets the group number for multiprocessing to split the input.
         """
         data_name = self.data_filename
-        print(data_name)
-        data = dataframes.DataStore(data_name,load=True)
-        print(data)
-        with dataframes.DataStore(data_name, load=True) as data:
+        with dataframes.DataStore(data_name) as data:
             data.add_metadata('number_of_frames', self.cap.num_frames)
             data.add_metadata('fps', self.cap.fps)
             data.add_metadata('video_filename', self.cap.filename)
@@ -89,7 +87,7 @@ class ParticleTracker:
             for f in tqdm(range(start, stop, 1), 'Tracking'):
                 df_frame = self.analyse_frame()
                 data.add_tracking_data(f, df_frame)
-            data.save(filename=self.data_filename)
+            data.save()
 
     def analyse_frame(self):
         frame = self.cap.read_next_frame()

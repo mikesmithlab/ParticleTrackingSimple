@@ -2,7 +2,7 @@ from ParticleTrackingSimple import tracking, preprocessing, postprocessing, \
     annotation, linking
 from ParticleTrackingSimple.video_crop import ReadCropVideo
 import os.path
-#from ParticleTrackingSimple.general import
+from ParticleTrackingSimple.general.dataframes import DataStore
 
 
 class PTWorkflow:
@@ -75,6 +75,9 @@ class PTWorkflow:
         if self.track_select:
             self.pt.track()
         if self.link_select:
+            print(self.data_filename)
+            data = DataStore(self.data_filename, load=True)
+            print(data.df.head(n=20))
             self.link.link_trajectories()
         if self.postprocess_select:
             self.pp.process()
