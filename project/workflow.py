@@ -49,8 +49,8 @@ class PTProject(PTWorkflow):
 
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
-    filename='/media/ppzmis/data/dots.mp4'
-    #filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    #filename='/media/ppzmis/data/dots.mp4'
+    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
     track = PTProject(video_filename=filename)
     #track.process()
     Gui(track)

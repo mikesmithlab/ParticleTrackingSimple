@@ -81,7 +81,7 @@ def subtract_bkg(frame, parameters=None, call_num=None):
             name = parameters['experiment']['video_filename']
             subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png', -1)
         else:
-            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
+            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'],-1)
 
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
@@ -134,7 +134,7 @@ def variance(frame, parameters=None, call_num=None):
             name = parameters['experiment']['video_filename']
             subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png',-1)
         else:
-            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
+            subtract_frame = cv2.imread(parameters['experiment']['bkg_img'],-1)
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
     elif params['variance_type'] == 'zeros':

@@ -1,6 +1,7 @@
 from ParticleTrackingSimple import  tracking, preprocessing, postprocessing,annotation, linking
 from ParticleTrackingSimple.video_crop import ReadCropVideo
 import os.path
+from ParticleTrackingSimple.general import
 
 
 class PTWorkflow:
@@ -57,6 +58,7 @@ class PTWorkflow:
             self.an = annotation.TrackingAnnotator(vidobject=self.cap, data_filename=self.data_filename, parameters=self.parameters['annotate'])
         else:
             self.parameters.pop('annotate')
+        self.dat
 
     def process(self):
         if self.track_select:

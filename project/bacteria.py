@@ -106,7 +106,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('trajectories',),#, 'trajectories'
+    'annotate_method': ('circles','text_label','trajectories',),#, 'trajectories'
     'videowriter':'opencv',
     'text_label':{'text':'Just Particles',
                  'position':(100,100),
