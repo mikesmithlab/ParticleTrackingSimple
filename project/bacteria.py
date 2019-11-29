@@ -9,14 +9,14 @@ crop = {'crop_method': None,
         }
 
 preprocess = {
-    'preprocess_method': ('grayscale','adaptive_threshold','distance','threshold',),
+    'preprocess_method': ('grayscale','adaptive_threshold',),
     'load_bkg_img':True,
     'grayscale':{},
-    'threshold':{'threshold':150,#[1,0,255,1],
-                 'th_mode':0},#[1,0,1,1]},
-    'adaptive_threshold':{'block_size': 111,#[15,1,300,2],
-                          'C': 14,#[-29, -30, 30, 1],
-                          'ad_mode': 1,#[0, 0, 1, 1]
+    'threshold':{'threshold':[1,0,255,1],
+                 'th_mode':[1,0,1,1]},
+    'adaptive_threshold':{'block_size': [15,1,300,2],
+                          'C': [-29, -30, 30, 1],
+                          'ad_mode': [0, 0, 1, 1]
                           },
     'distance':{},
     'blur':{'kernel':[1,1,15,2]},
@@ -36,7 +36,7 @@ preprocess = {
 
 track = {
     'track_method':('trackpy',),
-    'trackpy':{'size_estimate':21,#[7,1, 1001,2],
+    'trackpy':{'size_estimate':[7,1, 1001,2],
                 'invert':[0,0,1,1]
                },
     'hough':{'min_dist':[10,1,201,2],
@@ -52,7 +52,7 @@ track = {
     }
 
 link = {
-    'link_method':'default',
+    'link_method':('default',),
     'default':{'search_range': 100,
                 'pos_columns':None,
                 'max_frame_displacement': 100,
@@ -106,7 +106,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('circles','text_label','trajectories',),#, 'trajectories'
+    'annotate_method': ('circles','text_label',),#, 'trajectories'
     'videowriter':'opencv',
     'text_label':{'text':'Just Particles',
                  'position':(100,100),

@@ -70,7 +70,10 @@ class ParticleTracker:
             Sets the group number for multiprocessing to split the input.
         """
         data_name = self.data_filename
-        with dataframes.DataStore(data_name, load=False) as data:
+        print(data_name)
+        data = dataframes.DataStore(data_name,load=True)
+        print(data)
+        with dataframes.DataStore(data_name, load=True) as data:
             data.add_metadata('number_of_frames', self.cap.num_frames)
             data.add_metadata('fps', self.cap.fps)
             data.add_metadata('video_filename', self.cap.filename)

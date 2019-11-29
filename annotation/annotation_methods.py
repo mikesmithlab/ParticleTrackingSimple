@@ -224,8 +224,6 @@ def trajectories(frame, data, f, parameters=None, call_num=None):
     df2 = df.loc[f-traj_length:f]
 
     df3 = df2.set_index(['particle','frame']).sort_index(level='particle')
-    print('test')
-    print(df3.head(n=20))
 
     for index, particle in enumerate(particle_ids):
         traj_pts = df3[['x','y']].loc[particle]

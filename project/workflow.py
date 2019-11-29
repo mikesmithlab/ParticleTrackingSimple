@@ -35,11 +35,11 @@ class PTProject(PTWorkflow):
 
         PTWorkflow.__init__(self, video_filename=video_filename)
         self.crop_select = True
-        self.preprocess_select = False
-        self.track_select = False
+        self.preprocess_select = True
+        self.track_select = True
         self.link_select = False
         self.postprocess_select = False
-        self.annotate_select = True
+        self.annotate_select = False
 
         self.parameters = PARAMETERS
 
@@ -50,7 +50,7 @@ class PTProject(PTWorkflow):
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
     #filename='/media/ppzmis/data/dots.mp4'
-    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/JustParticle001.mp4'
     track = PTProject(video_filename=filename)
     #track.process()
     Gui(track)

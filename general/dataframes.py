@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 import pandas as pd
 
@@ -6,23 +7,24 @@ import pandas as pd
 class DataStore:
     """
     Manages HDFStore containing particle data and metadata
-
     Attributes
     ----------
     df : pandas dataframe
         Contains info on particle positions and properties.
-        Index of dataframe is the video_crop frame.
-
+        Index of dataframe is the video frame.
     metadata : dict
         Dictionary containing any metadata values.
     """
 
     def __init__(self, filename, load=True):
         self.df = pd.DataFrame()
+
         self.metadata = {}
         self.filename = os.path.splitext(filename)[0] + '.hdf5'
+        self.save()
         if load:
             self.load()
+
 
     def __enter__(self):
         return self
@@ -38,12 +40,10 @@ class DataStore:
     def add_frame_property(self, heading, values):
         """
         Add data for each frame.
-
         Parameters
         ----------
         heading: str
             title of dataframe column
-
         values: arraylike
             array of values with length = num_frames
         """
@@ -54,12 +54,10 @@ class DataStore:
     def add_metadata(self, name, data):
         """
         Add metadata to store.
-
         Parameters
         ----------
         name: str
             string key for dictionary
-
         data: Any
             Anything that can be saved as a dictionary item
         """
@@ -68,30 +66,24 @@ class DataStore:
     def add_particle_property(self, heading, values):
         """
         Add properties for each particle in the dataframe
-
         Parameters
         ----------
         heading: str
             Title of dataframe column
-
         values: arraylike
             Array of values with same length as dataframe
-
         """
         self.df[heading] = values
 
     def add_tracking_data(self, frame, tracked_data, col_names=None):
         """
         Add tracked data for each frame.
-
         Parameters
         ----------
         frame: int
             Frame number
-
         tracked_data: arraylike
             (N, D) shape array of N particles with D properties
-
         col_names: list of str
             Titles of each D properties for dataframe columns
         """
@@ -121,7 +113,6 @@ class DataStore:
     def append_store(self, store):
         """
         Append an instance of this class to itself.
-
         Parameters
         ----------
         store: seperate instance of this class
@@ -139,18 +130,13 @@ class DataStore:
     def get_info(self, frame, headings):
         """
         Get information on particles in a particular frame.
-
         Parameters
         ----------
         frame: int
-
         headings: list of str
             Titles of dataframe columns to be returned
         """
-        if headings == 'index':
-            return self.df.loc[frame].index.values
-        else:
-            return self.df.loc[frame, headings].values
+        return self.df.loc[frame, headings].values
 
     def load(self):
         """Load HDFStore"""
@@ -200,7 +186,6 @@ def concatenate_datastore(datastore_list, new_filename):
     DS_out.save()
 
 
-
 if __name__ == "__main__":
     from Generic import filedialogs
 
@@ -210,3 +195,4 @@ if __name__ == "__main__":
     print(DS.df.tail())
     print(DS.metadata)
     print(DS.df.dtypes)
+
