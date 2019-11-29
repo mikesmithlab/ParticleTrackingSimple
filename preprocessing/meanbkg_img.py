@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
 
 
-    for file in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'):
+    for file in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/JustParticles001.mp4'):
         readvid=ReadVideo(filename=file)
         frame_init=readvid.read_next_frame()#.astype(np.int32)
         counter=1

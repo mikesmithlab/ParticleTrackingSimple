@@ -34,7 +34,7 @@ class PTProject(PTWorkflow):
         #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = False
+        self.crop_select = True
         self.preprocess_select = False
         self.track_select = False
         self.link_select = False
@@ -49,8 +49,8 @@ class PTProject(PTWorkflow):
 
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
-
-    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    filename='/media/ppzmis/data/dots.mp4'
+    #filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
     track = PTProject(video_filename=filename)
-    track.process()
-    #Gui(track)
+    #track.process()
+    Gui(track)

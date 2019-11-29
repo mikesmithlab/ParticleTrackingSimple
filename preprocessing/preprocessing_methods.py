@@ -21,6 +21,7 @@ def distance(frame, parameters=None, call_num=None):
     :return: The distance transform image.
     '''
     dist = cv2.distanceTransform(frame, cv2.DIST_L2, 5)
+    dist = 255*dist/np.max(dist)
     return dist
 
 def grayscale(frame, parameters=None, call_num=None):
@@ -71,15 +72,14 @@ def subtract_bkg(frame, parameters=None, call_num=None):
         subtract_frame = mean_val * np.ones(np.shape(frame), dtype=np.uint8)
     elif params['subtract bkg type'] == 'img':
         temp_params = {}
-        params['subtract_bkg_blur_kernel']
-        temp_params['preprocess'] = {}
-        temp_params['preprocess']['kernel'] = get_param_val(params['variance_blur_kernel'])
 
         # This option subtracts the previously created image which is added to dictionary.
+        temp_params = {}
+        temp_params['preprocess'] = {
+            'blur': {'kernel': get_param_val(params['subtract_bkg_blur_kernel'])}}
         if parameters['experiment']['bkg_img'] is None:
             name = parameters['experiment']['video_filename']
-
-            subtract_frame = cv2.imread(name[:-4] + '_bkg_img')
+            subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png', -1)
         else:
             subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
 
@@ -133,7 +133,6 @@ def variance(frame, parameters=None, call_num=None):
         if parameters['experiment']['bkg_img'] is None:
             name = parameters['experiment']['video_filename']
             subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png',-1)
-            print(np.shape(subtract_frame))
         else:
             subtract_frame = cv2.imread(parameters['experiment']['bkg_img'])
         frame = blur(frame, temp_params)
@@ -172,7 +171,7 @@ def threshold(frame, parameters=None, call_num=None):
 
     option:
     parameters['threshold'] : sets the value of the cutoff threshold
-    parameters['mode] : Can be used to invert the above behaviour
+    parameters['th_mode] : Can be used to invert the above behaviour
 
     :param frame: grayscale img
     :param parameters: parameters dictionary
@@ -183,7 +182,7 @@ def threshold(frame, parameters=None, call_num=None):
     params = parameters['preprocess'][method_key]
 
     threshold = get_param_val(params['threshold'])
-    mode = get_param_val(params['mode'])
+    mode = get_param_val(params['th_mode'])
     ret, out = cv2.threshold(frame,threshold,255,mode)
     return out
 
@@ -199,7 +198,7 @@ def adaptive_threshold(frame, parameters=None, call_num=None):
     options:
     parameters['adaptive threshold']['block size'] : Size of local block of pixels to calculate threshold on
     parameters['adaptive threshold']['C'] : The mean-c value see here: http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
-    parameters['adaptive threshold']['mode'] : inverts behaviour
+    parameters['adaptive threshold']['ad_mode'] : inverts behaviour
 
     :param frame: grayscale image
     :param parameters: parameters dictionary
@@ -211,7 +210,7 @@ def adaptive_threshold(frame, parameters=None, call_num=None):
 
     block = get_param_val(params['block_size'])
     const = get_param_val(params['C'])
-    invert = get_param_val(params['mode'])
+    invert = get_param_val(params['ad_mode'])
 
     if invert == 1:
         out = cv2.adaptiveThreshold(frame,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, block, const)
@@ -236,7 +235,6 @@ def blur(frame, parameters=None, call_num=None):
     '''
     method_key = get_method_key('blur', call_num=call_num)
     params = parameters['preprocess'][method_key]
-
     kernel = get_param_val(params['kernel'])
     out = cv2.GaussianBlur(frame, (kernel, kernel), 0)
 

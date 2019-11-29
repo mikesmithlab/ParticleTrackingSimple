@@ -30,7 +30,6 @@ class TrackingAnnotator:
 
             for f in tqdm(range(start, stop, 1), 'Annotating'):
                 frame = self.cap.read_next_frame()
-
                 for method in self.parameters['annotate_method']:
                     # Use function in preprocessing_methods
                     method_name, call_num = get_method_name(method)

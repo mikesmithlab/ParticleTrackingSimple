@@ -1,5 +1,5 @@
 from ParticleTrackingSimple.general.parameters import get_param_val
-from ParticleTrackingSimple.annotation.cmap import colourmap, cmap_variables
+from ParticleTrackingSimple.annotation.cmap import colour_array
 from ParticleTrackingSimple.general.contours import draw_contours
 from ParticleTrackingSimple.general.parameters import get_method_key
 import cv2
@@ -103,6 +103,19 @@ Particle annotation
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 '''
+def get_class_subset(data, f, parameters, method=None):
+    classifier_column= parameters[method]['classifier_column']
+    if classifier_column is None:
+        sz = np.shape(data.df.loc[f].index.values)
+        subset_df = data.df.loc[f]
+    else:
+        classifier = parameters[method]['classifer']
+        temp = data.df.loc[f]
+        subset_df = temp[temp[classifier_column] == classifier]
+    return subset_df
+
+
+
 def circles(frame, data, f, parameters=None, call_num=None):
     '''
     Function draws circles on an image at x,y locations. If data.df['r'] exists
@@ -119,14 +132,11 @@ def circles(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('circles', call_num=call_num)
     if 'r' not in list(data.df.columns):
         data.add_particle_property('r', get_param_val(parameters[method_key]['radius']))
-
     thickness = get_param_val(parameters[method_key]['thickness'])
 
-    circles = data.df.loc[f, ['x', 'y', 'r']].values
-
-    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
-    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
-
+    subset_df = get_class_subset(data, f, parameters, method=method_key)
+    circles = subset_df[['x', 'y', 'r']].values
+    colours = colour_array(subset_df, f, parameters, method=method_key)
     for i, circle in enumerate(circles):
         try:
             frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
@@ -137,13 +147,13 @@ def circles(frame, data, f, parameters=None, call_num=None):
 
 def boxes(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('boxes', call_num=call_num)
-    box = data.get_info(f, 'box')
-    classifiers = data.get_info(f,'classifier')
-    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
-    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
+    thickness = get_param_val(parameters[method_key]['thickness'])
+    subset_df = get_class_subset(data, f, parameters, method=method_key)
+    box_pts = subset_df[['box']].values
+    colours = colour_array(subset_df, f, parameters, method=method_key)
 
-    for index, classifier in enumerate(classifiers):
-       frame = draw_contours(frame, [box[index]], col=colours[index],
+    for index, box in enumerate(box_pts):
+       frame = draw_contours(frame, [box_pts[index]], col=colours[index],
                                        thickness=get_param_val(parameters[method_key]['thickness']))
     return frame
 
@@ -151,10 +161,11 @@ def boxes(frame, data, f, parameters=None, call_num=None):
 
 def networks(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('networks', call_num=call_num)
-    df = data.df.loc[f]
+    thickness = get_param_val(parameters[method_key]['thickness'])
+    df = get_class_subset(data, f, parameters, method=method_key)
     df=df.set_index('particle')
     particle_ids = df.index.values
-    colour = parameters[method_key]['colour']
+    colours = colour_array(df, f, parameters, method=method_key)
     thickness = parameters[method_key]['thickness']
     for index, particle in enumerate(particle_ids):
         pt = df.loc[particle, ['x', 'y']].values
@@ -164,7 +175,7 @@ def networks(frame, data, f, parameters=None, call_num=None):
         for index2, neighbour in enumerate(neighbour_ids):
             pt = df.loc[neighbour, ['x','y']].values
             pt2 = (int(pt[0]), int(pt[1]))
-            frame = cv2.line(frame,pt1, pt2, colour, thickness, lineType=cv2.LINE_AA)
+            frame = cv2.line(frame,pt1, pt2, colours[index], thickness, lineType=cv2.LINE_AA)
     return frame
 '''
 --------------------------------------------------------------------------------------
@@ -185,9 +196,7 @@ def vectors(frame, data, f, parameters=None, call_num=None):
     tipLength = 0.01*get_param_val(parameters[method_key]['tip_length'])
     vector_scale = 0.01*get_param_val(parameters[method_key]['vector_scale'])
 
-
-    colour_data, cmap_type, cmax_max = cmap_variables(data, f, parameters, method=method_key)
-    colours = colourmap(colour_data, cmap_type=cmap_type,cmax_max=cmax_max)
+    colours = colour_array(data.df, f, parameters, method=method_key)
 
     for i, vector in enumerate(vectors):
         frame = cv2.arrowedLine(frame, (int(vector[0]), int(vector[1])),
@@ -198,8 +207,15 @@ def vectors(frame, data, f, parameters=None, call_num=None):
 def trajectories(frame, data, f, parameters=None, call_num=None):
     #This can only be run on a linked trajectory
     method_key = get_method_key('trajectories', call_num=call_num)
+
+    #In this case subset_df is only used to get the particle_ids and colours of trajectories.
+    subset_df = get_class_subset(data, f, parameters, method=method_key)
+    particle_ids = subset_df['particle'].values
+    colours = colour_array(subset_df, f, parameters, method=method_key)
+    thickness = get_param_val(parameters[method_key]['thickness'])
     traj_length = get_param_val(parameters[method_key]['traj_length'])
-    if f-traj_length < 0:
+
+    if (f-traj_length) < 0:
         traj_length = f
 
     df = data.df.sort_index()
@@ -207,28 +223,13 @@ def trajectories(frame, data, f, parameters=None, call_num=None):
     df['frame'] = df.index
     df2 = df.loc[f-traj_length:f]
 
-    classifier_column = parameters[method_key]['classifier_column']
-    classifier = parameters[method_key]['classifier']
-
-    if classifier_column is None:
-        df2 = df2.loc[:, ['x', 'y', 'particle']]
-        particle_ids = df2.loc[f,'particle'].values
-    else:
-        classifier_select = df2.loc[f, classifier_column]
-        df2 = df2.loc[:, ['x', 'y', 'particle', classifier_column]]
-        particle_ids = df2.loc[f, 'particle'].values
-        particle_ids=particle_ids[classifier_select == classifier]
-
-    df3 = df2.set_index('particle','frame').sort_index()
-
-    colour = parameters[method_key]['colour']
-    thickness = get_param_val(parameters[method_key]['thickness'])
+    df3 = df2.set_index(['particle','frame']).sort_index(level='particle')
+    print('test')
+    print(df3.head(n=20))
 
     for index, particle in enumerate(particle_ids):
-        traj_pts = df3.loc[particle].values
-        traj_pts = np.array(traj_pts, np.int32).reshape((-1,1,2))
-
-        frame = cv2.polylines(frame,[traj_pts],False,colour,thickness)
-
+        traj_pts = df3[['x','y']].loc[particle]
+        traj_pts = np.array(traj_pts.values, np.int32).reshape((-1,1,2))
+        frame = cv2.polylines(frame,[traj_pts],False,colours[index],thickness)
     return frame
 

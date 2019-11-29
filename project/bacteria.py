@@ -9,15 +9,16 @@ crop = {'crop_method': None,
         }
 
 preprocess = {
-    'preprocess_method': ('variance','grayscale','adaptive_threshold',),
+    'preprocess_method': ('grayscale','adaptive_threshold','distance','threshold',),
     'load_bkg_img':True,
     'grayscale':{},
-    'threshold':{'threshold':[1,0,255,1],
-                 'mode':[0,0,1,1]},
-    'adaptive_threshold':{'block_size': [15,1,300,2],
-                          'C': [-29, -30, 30, 1],
-                          'mode': [0, 0, 1, 1]
+    'threshold':{'threshold':150,#[1,0,255,1],
+                 'th_mode':0},#[1,0,1,1]},
+    'adaptive_threshold':{'block_size': 111,#[15,1,300,2],
+                          'C': 14,#[-29, -30, 30, 1],
+                          'ad_mode': 1,#[0, 0, 1, 1]
                           },
+    'distance':{},
     'blur':{'kernel':[1,1,15,2]},
     'medianblur':{'kernel':[1,1,15,2]},
     'gamma':{'gamma':[1,0,100,1]},
@@ -35,7 +36,7 @@ preprocess = {
 
 track = {
     'track_method':('trackpy',),
-    'trackpy':{'size_estimate':[7,1, 101,2],
+    'trackpy':{'size_estimate':21,#[7,1, 1001,2],
                 'invert':[0,0,1,1]
                },
     'hough':{'min_dist':[10,1,201,2],
@@ -52,11 +53,11 @@ track = {
 
 link = {
     'link_method':'default',
-    'default':{'search_range': 15,
+    'default':{'search_range': 100,
                 'pos_columns':None,
-                'max_frame_displacement': 10,
+                'max_frame_displacement': 100,
                 'memory': 3,
-                'min_frame_life': 30
+                'min_frame_life': 5
                 #
                 }
     }
@@ -105,7 +106,7 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('circles', 'trajectories','text_label',),
+    'annotate_method': ('trajectories',),#, 'trajectories'
     'videowriter':'opencv',
     'text_label':{'text':'Just Particles',
                  'position':(100,100),
@@ -125,9 +126,13 @@ annotate = {
                         'font_thickness': 1
                         },
     'circles':{'radius':6,
-               'cmap_type':'continuous',
-               'cmap_column':None,#'x'
-               'cmap_max':[470,1,2000,1],
+               'cmap_type':'static',#'continuous',
+               'cmap_column':'x',#For continuous
+               'cmap_max':[470,1,2000,1],#For continuous
+               'cmap_scale':1,
+               'colour': (0,0,255),#For static
+               'classifier_column':None,#For discrete or continuous
+               'classifier': None,#For discrete or continuous
                'thickness':2
                },
     'boxes':{'radius':10,
@@ -151,17 +156,26 @@ annotate = {
                'line_type':8,
                'tip_length':[1,1,100,1],
                'vector_scale':[1,1,2000,1],
-               'cmap_type':'continuous',
-               'cmap_column':'y',
-               'cmap_max':[1,1,2000,1]
+               'cmap_type':'static',#'continuous',
+               'cmap_column':'x',#For continuous
+               'cmap_max':[470,1,2000,1],#For continuous
+               'cmap_scale':1,
+               'colour': (0,0,255),#For static
+               'classifier_column':None,#For discrete or continuous
+               'classifier': None,#For discrete or continuous
+               'thickness':2
                 },
     'trajectories':{'x_column':'x',
                     'y_column':'y',
                     'traj_length': [200,0,100,1],
-                    'classifier_column':None,
-                    'classifier': 1,
-                    'colour':(50,200,50),
-                    'thickness':1
+                    'cmap_type':'static',#'continuous',
+               'cmap_column':'x',#For continuous
+               'cmap_max':[470,1,2000,1],#For continuous
+               'cmap_scale':1,
+               'colour': (0,255,0),#For static
+               'classifier_column':None,#For discrete or continuous
+               'classifier': None,#For discrete or continuous
+               'thickness':1
                }
 
 
