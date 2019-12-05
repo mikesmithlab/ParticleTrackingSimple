@@ -56,6 +56,11 @@ def contours(frame, parameters=None, call_num=None):
     a rotated bounding box. Use for finding an angle of object or
     estimate of size. If you need to do something with the pixels
     use contours instead.
+
+    contours stores: the centroid cx, cy, area enclosed by contour,
+    the bounding rectangle which is used with contour to generate
+    mask so that you can extract pixels from original image
+    and perform some analysis.
     '''
     method_key = get_method_key('contours',call_num=call_num)
     params = parameters[method_key]
@@ -66,12 +71,13 @@ def contours(frame, parameters=None, call_num=None):
     for index, contour in enumerate(contour_pts):
         M = cv2.moments(contour)
         if M['m00'] > 0:
-            cx = int(M['m10'] / M['m00'])
-            cy = int(M['m01'] / M['m00'])
             area = cv2.contourArea(contour)
             if (area < area_max) & (area > area_min):
-                info_contour = [cx, cy, area, contour]
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+                box = cv2.boundingRect(contour)
+                info_contour = [cx, cy, area, contour, box]
                 info.append(info_contour)
-    info_headings = ['x', 'y', 'area', 'contours']
+    info_headings = ['x', 'y', 'area', 'contours', 'boxes']
     df = pd.DataFrame(data=info, columns=info_headings)
     return df
