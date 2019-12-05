@@ -155,6 +155,18 @@ def boxes(frame, data, f, parameters=None, call_num=None):
     return frame
 
 
+def contours(frame, data, f, parameters=None, call_num=None):
+    method_key = get_method_key('contours', call_num=call_num)
+    thickness = get_param_val(parameters[method_key]['thickness'])
+    subset_df = get_class_subset(data, f, parameters, method=method_key)
+    contour_pts = subset_df[['contours']].values
+    colours = colour_array(subset_df, f, parameters, method=method_key)
+
+    for index, contour in enumerate(contour_pts):
+       frame = draw_contours(frame, contour, col=colours[index],
+                                       thickness=thickness)
+    return frame
+
 
 def networks(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('networks', call_num=call_num)

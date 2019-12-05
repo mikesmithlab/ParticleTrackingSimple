@@ -308,3 +308,12 @@ def resize(frame, parameters=None, call_num=None):
     scale = get_param_val(params['scale'])/100
     return cv2.resize(frame, scale)
 
+def erosion(frame, parameters=None, call_num=None):
+    method_key = get_method_key('erosion', call_num=call_num)
+    params = parameters['preprocess'][method_key]
+    kernel = get_param_val(params['erosion_kernel'])
+    iterations = get_param_val(params['iterations'])
+
+    kernel = np.ones((kernel, kernel))
+
+    return cv2.erode(frame, kernel, iterations=iterations)

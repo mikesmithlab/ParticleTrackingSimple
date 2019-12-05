@@ -33,12 +33,12 @@ class PTProject(PTWorkflow):
         #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = False
-        self.preprocess_select = False
-        self.track_select = False
-        self.link_select = True
+        self.crop_select = True
+        self.preprocess_select = True
+        self.track_select = True
+        self.link_select = False
         self.postprocess_select = False
-        self.annotate_select = False
+        self.annotate_select = True
 
         self.parameters = params
 
@@ -48,9 +48,9 @@ class PTProject(PTWorkflow):
 
 if '__main__' == __name__:
     from ParticleTrackingSimple.general.gui import Gui
-    from ParticleTrackingSimple.project.bacteria import PARAMETERS
+    from ParticleTrackingSimple.project.hydrogel import PARAMETERS
 
-    filename = '/media/ppzmis/data/ActiveMatter/Microscopy/191126_500nm_particles/test.mp4'
+    filename = '/home/mike/Videos/HydrogelTest.m4v'
     track = PTProject(video_filename=filename, params=PARAMETERS)
-    track.process()
-    #Gui(track)
+    #track.process()
+    Gui(track)

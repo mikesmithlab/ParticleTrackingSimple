@@ -32,11 +32,17 @@ def hough(frame, parameters=None, call_num=None):
     df = pd.DataFrame(circles_dict)
     return df
 
-def contours(frame, parameters=None):
-    method_key = get_method_key('contours',call_num=None)
+def boxes(frame, parameters=None, call_num=None):
+    '''
+    boxes method finds contour of object but reduces the info to
+    a rotated bounding box. Use for finding an angle of object or
+    estimate of size. If you need to do something with the pixels
+    use contours instead.
+    '''
+    method_key = get_method_key('boxes',call_num=call_num)
     info = []
-    contours = images.find_contours(frame)
-    for index, contour in enumerate(contours):
+    contour_pts = images.find_contours(frame)
+    for index, contour in enumerate(contour_pts):
         info_contour = images.rotated_bounding_rectangle(contour)
         info_contour[0], info_contour[1] = np.mean(info_contour[5], axis=0)
         info.append(info_contour)
@@ -44,4 +50,28 @@ def contours(frame, parameters=None):
     df = pd.DataFrame(data=info, columns=info_headings)
     return df
 
-
+def contours(frame, parameters=None, call_num=None):
+    '''
+    boxes method finds contour of object but reduces the info to
+    a rotated bounding box. Use for finding an angle of object or
+    estimate of size. If you need to do something with the pixels
+    use contours instead.
+    '''
+    method_key = get_method_key('contours',call_num=call_num)
+    params = parameters[method_key]
+    area_min = get_param_val(params['area_min'])
+    area_max = get_param_val(params['area_max'])
+    info = []
+    contour_pts = images.find_contours(frame)
+    for index, contour in enumerate(contour_pts):
+        M = cv2.moments(contour)
+        if M['m00'] > 0:
+            cx = int(M['m10'] / M['m00'])
+            cy = int(M['m01'] / M['m00'])
+            area = cv2.contourArea(contour)
+            if (area < area_max) & (area > area_min):
+                info_contour = [cx, cy, area, contour]
+                info.append(info_contour)
+    info_headings = ['x', 'y', 'area', 'contours']
+    df = pd.DataFrame(data=info, columns=info_headings)
+    return df
