@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 from ParticleTrackingSimple.general.parameters import  get_param_val, get_method_key
-from ParticleTrackingSimple.general.imageformat import bgr_2_grayscale
-from Generic.images.basics import display
+
 
 def distance(frame, parameters=None, call_num=None):
     '''

@@ -31,7 +31,6 @@ class DataStore:
         with pd.HDFStore(self.filename) as store:
             self.df = store.get('df')
             self.metadata = store.get_storer('df').attrs.metadata
-        print(self.df)
 
     def __enter__(self):
         return self
