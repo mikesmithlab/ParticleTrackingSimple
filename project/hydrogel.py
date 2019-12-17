@@ -1,3 +1,9 @@
+'''
+
+
+'''
+
+
 experiment = {'bkg_img':None,#None gives default of video_filename[:-4] + '_bkgimg.png'
               'sample':'Hydrogels Swelling',
               'fps':0.01
