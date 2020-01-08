@@ -2,8 +2,7 @@ import os
 from tqdm import tqdm
 from ParticleTrackingSimple.general import dataframes
 from ParticleTrackingSimple.tracking import tracking_methods as tm
-from ParticleTrackingSimple.general.parameters import get_method_name
-import numpy as np
+
 
 class ParticleTracker:
     """

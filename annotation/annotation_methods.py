@@ -1,6 +1,5 @@
 from ParticleTrackingSimple.general.parameters import get_param_val, get_method_key
 from ParticleTrackingSimple.general.cmap import colour_array
-from ParticleTrackingSimple.general.contours import draw_contours
 import cv2
 import numpy as np
 
@@ -139,7 +138,6 @@ def circles(frame, data, f, parameters=None, call_num=None):
             frame = cv2.circle(frame, (int(circle[0]), int(circle[1])), int(circle[2]), colours[i], thickness)
         except:
             print('Failed plotting circle, check data is valid')
-            print(circle)
     return frame
 
 def boxes(frame, data, f, parameters=None, call_num=None):
@@ -150,19 +148,49 @@ def boxes(frame, data, f, parameters=None, call_num=None):
     colours = colour_array(subset_df, f, parameters, method=method_key)
 
     for index, box in enumerate(box_pts):
-       frame = draw_contours(frame, [box_pts[index]], col=colours[index],
+       frame = _draw_contours(frame, [box_pts[index]], col=colours[index],
                                        thickness=get_param_val(parameters[method_key]['thickness']))
     return frame
 
+
+def contours(frame, data, f, parameters=None, call_num=None):
+    method_key = get_method_key('contours', call_num=call_num)
+    thickness = get_param_val(parameters[method_key]['thickness'])
+    subset_df = get_class_subset(data, f, parameters, method=method_key)
+    contour_pts = subset_df[['contours']].values
+    colours = colour_array(subset_df, f, parameters, method=method_key)
+
+    for index, contour in enumerate(contour_pts):
+       frame = _draw_contours(frame, contour, col=colours[index],
+                                       thickness=thickness)
+    return frame
+
+def _draw_contours(img, contours, col=(0,0,255), thickness=1):
+    """
+
+    :param img:
+    :param contours:
+    :param col: Can be a defined colour in colors.py or a list of tuples(3,1) of colors of length contours
+    :param thickness: -1 fills the contour.
+    :return:
+    """
+    if (np.size(np.shape(col)) == 0) | (np.size(np.shape(col)) == 1):
+        img = cv2.drawContours(img, contours, -1, col, thickness)
+    else:
+        for i, contour in enumerate(contours):
+            img = cv2.drawContours(img, contour, -1, col[i], thickness)
+    return img
 
 
 def networks(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('networks', call_num=call_num)
     df = get_class_subset(data, f, parameters, method=method_key)
-    df=df.set_index('particle')
+    df = df.set_index('particle')
     particle_ids = df.index.values
+
     colours = colour_array(df, f, parameters, method=method_key)
-    thickness = parameters[method_key]['thickness']
+    thickness = get_param_val(parameters[method_key]['thickness'])
+
     for index, particle in enumerate(particle_ids):
         pt = df.loc[particle, ['x', 'y']].values
         pt1 = (int(pt[0]), int(pt[1]))

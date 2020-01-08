@@ -23,3 +23,25 @@ def get_depth(img):
         return 1
     else:
         return shp[2]
+
+
+def grayscale_2_bgr(img):
+    if len(np.shape(img)) == 3:
+        return img
+    else:
+        return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+
+def hstack(*args):
+    """
+    Stacks images horizontally
+
+    If image depths are mismatched then converts grayscale images to bgr before stacking
+    """
+    depths = [get_depth(im) for im in args]
+    gray = [d == 1 for d in depths]
+    if all(gray):
+        return np.hstack(args)
+    else:
+        ims = [grayscale_2_bgr(im) for im in args]
+        return np.hstack(ims)

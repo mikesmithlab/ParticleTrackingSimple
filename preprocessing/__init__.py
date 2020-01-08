@@ -1,6 +1,6 @@
 from ParticleTrackingSimple.preprocessing import preprocessing_methods as pm
 from ParticleTrackingSimple.general.parameters import get_method_name
-import cv2
+
 
 class Preprocessor:
     """
