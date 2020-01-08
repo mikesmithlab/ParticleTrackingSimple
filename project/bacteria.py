@@ -1,29 +1,34 @@
 experiment = {'bkg_img':None,#None gives default of video_filename[:-4] + '_bkgimg.png'
-              'sample':'500nm colloids in buffer',
+              'sample':'500nm colloids in buffer just bright',
               'fps':30
               }
 
-crop = {'crop_method': None,
-        'crop_coords': None,# (254, 92, 864, 529),
+crop = {'crop_method': 'crop_box',
+        'crop_coords': (76, 119, 944, 900),
         'mask': None
         }
 
 preprocess = {
-    'preprocess_method': ('grayscale','adaptive_threshold',),
+    'preprocess_method': ('variance','grayscale','medianblur','adaptive_threshold',),#'variance'
     'load_bkg_img':True,
     'grayscale':{},
     'threshold':{'threshold':[1,0,255,1],
                  'th_mode':[1,0,1,1]},
-    'adaptive_threshold':{'block_size': [15,1,300,2],
-                          'C': [-29, -30, 30, 1],
+    'adaptive_threshold':{'block_size': [25,1,300,2],
+                          'C': [-22, -30, 30, 1],
                           'ad_mode': [0, 0, 1, 1]
                           },
     'distance':{},
     'blur':{'kernel':[1,1,15,2]},
-    'medianblur':{'kernel':[1,1,15,2]},
+    'medianblur':{'kernel':[3,1,15,2]},
     'gamma':{'gamma':[1,0,100,1]},
     'resize':{'scale':[1,0,500,1]},
-    'subtract_bkg':{},
+    'subtract_bkg':{'subtract_bkg_type':'img',
+                'subtract_bkg_blur_kernel': 3,
+                'subtract_bkg_invert':[1,0,1,1],
+                'subtract_bkg_norm':True
+                },
+
     'variance':{'variance_type':'img',
                 'variance_blur_kernel': 3,
                 'variance_bkg_norm':True
@@ -53,11 +58,10 @@ track = {
 
 link = {
     'link_method':('default',),
-    'default':{'search_range': 100,
-                'pos_columns':None,
-                'max_frame_displacement': 100,
+    'default':{ 'pos_columns':None,
+                'max_frame_displacement': 10,
                 'memory': 3,
-                'min_frame_life': 5
+                'min_frame_life': 10
                 #
                 }
     }
@@ -106,9 +110,10 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('circles','text_label',),#, 'trajectories'
+    'annotate_method': ('circles','text_label','trajectories',),
     'videowriter':'opencv',
-    'text_label':{'text':'Just Particles',
+    'subsection':(200,300),#(start,stop) frame numbers
+    'text_label':{'text':'BP1',
                  'position':(100,100),
                  'font_colour':(255,0,0),
                  'font_size':3,

@@ -67,10 +67,10 @@ def subtract_bkg(frame, parameters=None, call_num=None):
     method_key = get_method_key('subtract_bkg', call_num=call_num)
     params = parameters['preprocess'][method_key]
 
-    if params['subtract bkg type'] == 'mean':
+    if params['subtract_bkg_type'] == 'mean':
         mean_val = int(np.mean(frame))
         subtract_frame = mean_val * np.ones(np.shape(frame), dtype=np.uint8)
-    elif params['subtract bkg type'] == 'img':
+    elif params['subtract_bkg_type'] == 'img':
         temp_params = {}
 
         # This option subtracts the previously created image which is added to dictionary.
@@ -83,12 +83,20 @@ def subtract_bkg(frame, parameters=None, call_num=None):
         else:
             subtract_frame = cv2.imread(parameters['experiment']['bkg_img'],-1)
 
+
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
+        mean_subtract = np.mean(subtract_frame)
+        mean_frame = np.mean(frame)
+        subtract_frame = subtract_frame*(mean_frame/mean_subtract)
+        subtract_frame =subtract_frame.astype(np.uint8)
 
-    frame = cv2.subtract(subtract_frame, frame)
+    if get_param_val(params['subtract_bkg_invert']):
+        frame = cv2.subtract(subtract_frame, frame)
+    else:
+        frame = cv2.subtract(frame, subtract_frame)
 
-    if params['subtract bkg norm'] == True:
+    if params['subtract_bkg_norm']==True:
         frame = cv2.normalize(frame, None, alpha=0, beta=255,
                               norm_type=cv2.NORM_MINMAX)
     return frame
@@ -123,7 +131,6 @@ def variance(frame, parameters=None, call_num=None):
     method_key = get_method_key('variance', call_num=call_num)
     params = parameters['preprocess'][method_key]
 
-
     if params['variance_type'] == 'mean':
         mean_val = int(np.mean(frame))
         subtract_frame = mean_val*np.ones(np.shape(frame), dtype=np.uint8)
@@ -135,10 +142,16 @@ def variance(frame, parameters=None, call_num=None):
             subtract_frame = cv2.imread(name[:-4] + '_bkgimg.png',-1)
         else:
             subtract_frame = cv2.imread(parameters['experiment']['bkg_img'],-1)
+
         frame = blur(frame, temp_params)
         subtract_frame = blur(subtract_frame, temp_params)
     elif params['variance_type'] == 'zeros':
         subtract_frame = np.zeros(np.shape(frame))
+
+    mean_subtract = np.mean(subtract_frame)
+    mean_frame = np.mean(frame)
+    subtract_frame = subtract_frame * (mean_frame / mean_subtract)
+    subtract_frame = subtract_frame.astype(np.uint8)
 
     frame1 = cv2.subtract(subtract_frame, frame)
     frame1 = cv2.normalize(frame1, frame1 ,0,255,cv2.NORM_MINMAX)
@@ -259,7 +272,7 @@ def medianblur(frame, parameters=None, call_num=None):
     params = parameters['preprocess'][method_key]
 
     kernel = get_param_val(params['kernel'])
-    out = cv2.medianBlur(frame, (kernel,kernel))
+    out = cv2.medianBlur(frame, kernel)
     return out
 
 def gamma(image, parameters=None, call_num=None):

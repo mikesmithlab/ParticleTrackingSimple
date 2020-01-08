@@ -21,8 +21,12 @@ class TrackingAnnotator:
     def annotate(self, f_index=None):
         with dataframes.DataStore(self.data_filename, load=True) as data:
             if f_index is None:
-                start=0
-                stop=self.cap.num_frames
+                if self.parameters['subsection'] is None:
+                    start=0
+                    stop=self.cap.num_frames
+                else:
+                    start = self.parameters['subsection'][0]
+                    stop = self.parameters['subsection'][1]
             else:
                 start=f_index
                 stop=f_index+1

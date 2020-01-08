@@ -31,7 +31,6 @@ class DataStore:
         with pd.HDFStore(self.filename) as store:
             self.df = store.get('df')
             self.metadata = store.get_storer('df').attrs.metadata
-        print(self.df)
 
     def __enter__(self):
         return self
@@ -158,10 +157,12 @@ class DataStore:
             with pd.HDFStore(self.filename) as store:
                 store.put('df', self.df)
                 store.get_storer('df').attrs.metadata = self.metadata
+                store.close()
         else:
             with pd.HDFStore(filename) as store:
                 store.put('df', self.df)
                 store.get_storer('df').attrs.metadata = self.metadata
+                store.close()
 
     def add_headings_to_metadata(self):
         self.metadata['headings'] = self.headings

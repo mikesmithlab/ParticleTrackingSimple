@@ -158,7 +158,6 @@ def boxes(frame, data, f, parameters=None, call_num=None):
 
 def networks(frame, data, f, parameters=None, call_num=None):
     method_key = get_method_key('networks', call_num=call_num)
-    thickness = get_param_val(parameters[method_key]['thickness'])
     df = get_class_subset(data, f, parameters, method=method_key)
     df=df.set_index('particle')
     particle_ids = df.index.values
@@ -167,7 +166,6 @@ def networks(frame, data, f, parameters=None, call_num=None):
     for index, particle in enumerate(particle_ids):
         pt = df.loc[particle, ['x', 'y']].values
         pt1 = (int(pt[0]), int(pt[1]))
-        # neighbour_ids = df['neighbours'].loc(particle)
         neighbour_ids = df.loc[particle, 'neighbours']
         for index2, neighbour in enumerate(neighbour_ids):
             pt = df.loc[neighbour, ['x','y']].values
