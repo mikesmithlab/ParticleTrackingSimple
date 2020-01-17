@@ -1,6 +1,7 @@
 import numpy as np
 from ParticleTrackingSimple.general.parameters import get_method_key, get_param_val
 import scipy.spatial as sp
+import trackpy as tp
 
 
 '''
@@ -10,18 +11,21 @@ All these methods operate on all frames simultaneously
 '''
 
 def difference(data, f_index=None, parameters=None, call_num=None):
-    '''Returns frame with new column of rolling differences
+    '''Returns dataframe with new column of rolling differences
        The differences are calculated at separations equal
        to span. Where this is not possible the value np.Nan
        is inserted.
     '''
+    print('start')
     method_key = get_method_key('difference', call_num)
     span = parameters[method_key]['span']
     column = parameters[method_key]['column_name']
     output_name = parameters[method_key]['output_name']
-
+    data.index.name = 'index'
+    data = data.sort_values(['particle', 'frame'])
     data[output_name] = data[column].diff(periods=span)
     data['nan'] = data['particle'].diff(periods=span).astype(bool)
+
     data[output_name][data['nan'] == True] = np.NaN
     data.drop(labels='nan',axis=1)
     return data
@@ -64,10 +68,18 @@ def rate(data, f_index=None, parameters=None, call_num=None):
     return data
 
 def magnitude(data, f_index=None, parameters=None, call_num=None):
+    '''
+
+    :param data:
+    :param f_index:
+    :param parameters:
+    :param call_num:
+    :return:
+    '''
     method_key=get_method_key('magnitude', call_num)
     columns = parameters[method_key]['column_names']
     output_name = parameters[method_key]['output_name']
-    column_data=data[columns]
+    column_data=data[[columns[0],columns[1]]]
     if np.size(columns) == 2:
         data[output_name] = (column_data[columns[0]]**2 + column_data[columns[1]]**2)**0.5
     elif np.size(columns) == 3:
@@ -93,12 +105,86 @@ def angle(data, f_index=None, parameters=None, call_num=None):
     return data
 
 
+def mean(data, f_index=None, parameters=None, call_num=None):
+    '''
+    Returns the mean of a particle's trajectory values to a new
+    column. The value is repeated next to all entries for that trajectory
+
+    :param data: dataframe input
+    :param f_index:
+    :param parameters:
+    :param call_num:
+    :return: dataframe with new column defined in output_name of parameters
+    '''
+    method_key = get_method_key('mean', call_num)
+    column = parameters[method_key]['column_name']
+    output_name = parameters[method_key]['output_name']
+    ####Transform is not doing what I expect
+    temp=data.groupby('particle')[column].transform('mean')
+    data[output_name] = temp
+    return data
+
+def median(data, f_index=None, parameters=None, call_num=None):
+    '''
+    Returns the median of a particle's trajectory values to a new
+    column. The value is repeated next to all entries for that trajectory
+
+    :param data: dataframe input
+    :param f_index:
+    :param parameters:
+    :param call_num:
+    :return: dataframe with new column defined in output_name of parameters
+    '''
+    method_key = get_method_key('median', call_num)
+    column = parameters[method_key]['column_name']
+    output_name = parameters[method_key]['output_name']
+    temp=data.groupby('particle')[column].transform('median')
+    data[output_name] = temp
+    return data
+
+def max(data, f_index=None, parameters=None, call_num=None):
+    '''
+    Returns the median of a particle's trajectory values to a new
+    column. The value is repeated next to all entries for that trajectory
+
+    :param data: dataframe input
+    :param f_index:
+    :param parameters:
+    :param call_num:
+    :return: dataframe with new column defined in output_name of parameters
+    '''
+    method_key = get_method_key('max', call_num)
+    column = parameters[method_key]['column_name']
+    output_name = parameters[method_key]['output_name']
+    temp=data.groupby('particle')[column].transform('max')
+    data[output_name] = temp
+    return data
+
+
 def classify(data, f_index=None, parameters=None, call_num=None):
     method_key = get_method_key('classify', call_num)
     column = parameters[method_key]['column_name']
     output_name=parameters[method_key]['output_name']
-    data[output_name] = 1
+    threshold_value = get_param_val(parameters[method_key]['value'])
+    data[output_name] = data[column].apply(lambda x: 1 if x < threshold_value else 2)
     return data
+
+
+def subtract_drift(data, f_index=None, parameters=None, call_num=None):
+    method_key = get_method_key('subtract_drift', call_num)
+
+    drift = tp.motion.compute_drift(data)
+
+    drift_corrected = tp.motion.subtract_drift(data.copy(), drift)
+    print(drift_corrected.columns)
+    drift_corrected.index.name = 'index'
+    #drift_corrected = drift_corrected.sort_values(by=['particle','index'])
+
+    print(drift_corrected.head())
+    print(data.head())
+
+    return data
+
 
 '''
 --------------------------------------------------------------------------------------------------------------

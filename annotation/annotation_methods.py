@@ -105,7 +105,7 @@ def get_class_subset(data, f, parameters, method=None):
         sz = np.shape(data.df.loc[f].index.values)
         subset_df = data.df.loc[f]
     else:
-        classifier = parameters[method]['classifer']
+        classifier = parameters[method]['classifier']
         temp = data.df.loc[f]
         subset_df = temp[temp[classifier_column] == classifier]
     return subset_df

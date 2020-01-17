@@ -1,5 +1,5 @@
 experiment = {'bkg_img':None,#None gives default of video_filename[:-4] + '_bkgimg.png'
-              'sample':'500nm colloids in buffer just bright',
+              'sample':'Normal Bacteria + 500nm colloids in buffer just bright',
               'fps':30
               }
 
@@ -14,8 +14,8 @@ preprocess = {
     'grayscale':{},
     'threshold':{'threshold':[1,0,255,1],
                  'th_mode':[1,0,1,1]},
-    'adaptive_threshold':{'block_size': [25,1,300,2],
-                          'C': [-22, -30, 30, 1],
+    'adaptive_threshold':{'block_size': [29,1,300,2],
+                          'C': [-23, -30, 30, 1],
                           'ad_mode': [0, 0, 1, 1]
                           },
     'distance':{},
@@ -28,15 +28,11 @@ preprocess = {
                 'subtract_bkg_invert':[1,0,1,1],
                 'subtract_bkg_norm':True
                 },
-
     'variance':{'variance_type':'img',
                 'variance_blur_kernel': 3,
                 'variance_bkg_norm':True
                 },
     'flip':{},
-
-
-
     }
 
 track = {
@@ -67,23 +63,35 @@ link = {
     }
 
 postprocess = {
-    'postprocess_method': ('neighbours',),
+    'postprocess_method': ('subtract_drift','difference','difference*y','magnitude','max','classify',),
     'smooth':{'column_name':'y',
               'output_name':'y_smooth',
               'span':5,
               'method':'default'
               },
+    'subtract_drift':{},
     'difference':{'column_name':'x',
                   'output_name':'x_diff',
-                  'span':2
+                  'span':20
                   },
-    'difference*2':{'column_name':'y',
+    'difference*y':{'column_name':'y',
                   'output_name':'y_diff',
-                  'span':2
+                  'span':20
                   },
-    'magnitude':{'column_names':('vx','vy'),
-                 'output_name':'v'
+    'magnitude':{'column_names':('x_diff','y_diff'),
+                 'output_name':'r_diff'
     },
+    'median':{'column_name':'r_diff',
+                'output_name':'median_r',},
+
+    'max':{'column_name':'r_diff',
+           'output_name':'max_r',},
+
+    'classify':{'column_name':'max_r',
+                'output_name':'classifier',
+                'value':[30, 1, 100, 1]
+                },
+
     'angle':{'column_names':('x','y'),
              'output_name':'theta',
              'units':'degrees'
@@ -102,17 +110,14 @@ postprocess = {
     'neighbours':{'method':'delaunay',
                   'neighbours':6,
                   'cutoff':[50,1,200,1],
-                },
-    'classify':{'column_name':'y',
-                'output_name':'classify',
-                'bin_norm':True,
-                'bin_edges':[0,0.1,0.5,1]}
+                }
+
     }
 
 annotate = {
-    'annotate_method': ('circles','text_label','trajectories',),
+    'annotate_method': ('circles','circles*2','text_label','trajectories','trajectories*bacteria',),
     'videowriter':'opencv',
-    'subsection':(200,300),#(start,stop) frame numbers
+    'subsection':(300,500),#(start,stop) frame numbers
     'text_label':{'text':'BP1',
                  'position':(100,100),
                  'font_colour':(255,0,0),
@@ -136,10 +141,20 @@ annotate = {
                'cmap_max':[470,1,2000,1],#For continuous
                'cmap_scale':1,
                'colour': (0,0,255),#For static
-               'classifier_column':None,#For discrete or continuous
-               'classifier': None,#For discrete or continuous
+               'classifier_column': 'classifier',#For discrete or continuous
+               'classifier': 1,#For discrete or continuous
                'thickness':2
                },
+    'circles*2': {'radius': 6,
+                'cmap_type': 'static',  # 'continuous',
+                'cmap_column': 'x',  # For continuous
+                'cmap_max': [470, 1, 2000, 1],  # For continuous
+                'cmap_scale': 1,
+                'colour': (255, 0, 0),  # For static
+                'classifier_column': 'classifier',
+                'classifier': 2,  # For discrete or continuous
+                'thickness': 2
+                },
     'boxes':{'radius':10,
                'cmap_type':'continuous',
                'cmap_column':'x',#None
@@ -152,10 +167,11 @@ annotate = {
                'cmap_max':[1,1,2000,1],
                'thickness':2
                },
-    'networks':{'colour':(0,255,0),
+                'networks':{'colour':(0,255,0),
                'thickness':2
                },
-    'vectors':{'dx_column':'x',
+
+                'vectors':{'dx_column':'x',
                'dy_column':'y',
                'thickness':2,
                'line_type':8,
@@ -171,20 +187,32 @@ annotate = {
                'thickness':2
                 },
     'trajectories':{'x_column':'x',
-                    'y_column':'y',
-                    'traj_length': [200,0,100,1],
-                    'cmap_type':'static',#'continuous',
-               'cmap_column':'x',#For continuous
-               'cmap_max':[470,1,2000,1],#For continuous
-               'cmap_scale':1,
-               'colour': (0,255,0),#For static
-               'classifier_column':None,#For discrete or continuous
-               'classifier': None,#For discrete or continuous
-               'thickness':1
+                'y_column':'y',
+                'traj_length': [1000,0,100,1],
+                'cmap_type':'static',#'continuous',
+                'cmap_column':'x',#For continuous
+                'cmap_max':[470,1,2000,1],#For continuous
+                'cmap_scale':1,
+                'colour': (64,224,208),#For static
+                'classifier_column':'classifier',#For discrete or continuous
+                'classifier': 1,#For discrete or continuous
+                'thickness':1
+               },
+    'trajectories*bacteria':{'x_column':'x',
+                'y_column':'y',
+                'traj_length': [1000,0,100,1],
+                'cmap_type':'static',#'continuous',
+                'cmap_column':'x',#For continuous
+                'cmap_max':[470,1,2000,1],#For continuous
+                'cmap_scale':1,
+                'colour': (255,255,0),#For static
+                'classifier_column':'classifier',#For discrete or continuous
+                'classifier': 2,#For discrete or continuous
+                'thickness':1
                }
 
 
-    }
+                }
 
 PARAMETERS = {
     'experiment': experiment,

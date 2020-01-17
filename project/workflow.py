@@ -33,11 +33,11 @@ class PTProject(PTWorkflow):
         #Select operations to be performed'output_name':'x_smooth',
 
         PTWorkflow.__init__(self, video_filename=video_filename)
-        self.crop_select = True
-        self.preprocess_select = True
-        self.track_select = True
-        self.link_select = True
-        self.postprocess_select = False
+        #self.crop_select = True
+        #self.preprocess_select = True
+        #self.track_select = True
+        #self.link_select = True
+        self.postprocess_select = True
         self.annotate_select = True
 
         self.parameters = params.copy()
@@ -51,8 +51,8 @@ if '__main__' == __name__:
     from ParticleTrackingSimple.project.bacteria import PARAMETERS
     from Generic.filedialogs import BatchProcess
 
-    for filename in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191218_MP_particles_bacteria/streams/*.mp4'):
+    for filename in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191218_MP_particles_bacteria/streams/BacteriaParticles001.mp4'):
         print(filename)
         track = PTProject(video_filename=filename, params=PARAMETERS)
-        track.process()
-        #Gui(track)
+        #track.process()
+        Gui(track)

@@ -12,6 +12,8 @@ class PostProcessor:
 
     def process(self, f_index=None):
         self.data.df['frame'] = self.data.df.index
+        self.data.df.index.name = 'index'
+        self.data.df = self.data.df.sort_values(['particle', 'frame'])
 
         for method in self.parameters['postprocess_method']:
             method_name, call_num = get_method_name(method)

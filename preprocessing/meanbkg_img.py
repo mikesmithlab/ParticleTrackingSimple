@@ -2,11 +2,10 @@ from Generic.filedialogs import BatchProcess
 from ParticleTrackingSimple.video_crop import ReadCropVideo
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 from ParticleTrackingSimple.project.bacteria import PARAMETERS
 
 def create_bkg_img(parameters=None, filename=None):
-    readvid = ReadCropVideo(parameters=PARAMETERS['crop'], filename=filename)
+    readvid = ReadCropVideo(parameters=PARAMETERS, filename=filename)
     frame_init = readvid.read_next_frame()  # .astype(np.int32)
     counter = 1
     sz = np.shape(frame_init)
@@ -26,5 +25,6 @@ def create_bkg_img(parameters=None, filename=None):
 
 
 if __name__ == '__main__':
+    print(PARAMETERS['crop'])
     for file in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191218_MP_particles_bacteria/streams/BacteriaParticles*.mp4'):
-        create_bkg_img(parameters=PARAMETERS, filename=file)
+        create_bkg_img(parameters=PARAMETERS['crop'], filename=file)

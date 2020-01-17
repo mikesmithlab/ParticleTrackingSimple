@@ -27,6 +27,7 @@ class TrackingAnnotator:
                 else:
                     start = self.parameters['subsection'][0]
                     stop = self.parameters['subsection'][1]
+
             else:
                 start=f_index
                 stop=f_index+1
@@ -35,7 +36,6 @@ class TrackingAnnotator:
             for f in tqdm(range(start, stop, 1), 'Annotating'):
                 frame = self.cap.read_next_frame()
                 for method in self.parameters['annotate_method']:
-                    # Use function in preprocessing_methods
                     method_name, call_num = get_method_name(method)
                     frame = getattr(am, method_name)(frame, data, f, self.parameters, call_num=call_num)
                 if f_index is None:
