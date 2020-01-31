@@ -70,11 +70,11 @@ postprocess = {
               'method':'default'
               },
     'subtract_drift':{},
-    'difference':{'column_name':'x',
+    'difference':{'column_name':'x_drift',
                   'output_name':'x_diff',
-                  'span':20
+                  'span':10
                   },
-    'difference*y':{'column_name':'y',
+    'difference*y':{'column_name':'y_drift',
                   'output_name':'y_diff',
                   'span':20
                   },
@@ -89,7 +89,7 @@ postprocess = {
 
     'classify':{'column_name':'max_r',
                 'output_name':'classifier',
-                'value':[30, 1, 100, 1]
+                'value':[18, 1, 100, 1]
                 },
 
     'angle':{'column_names':('x','y'),
@@ -115,9 +115,9 @@ postprocess = {
     }
 
 annotate = {
-    'annotate_method': ('circles','circles*2','text_label','trajectories','trajectories*bacteria',),
+    'annotate_method': ('circles','circles*2','circles*nans','text_label','trajectories','trajectories*bacteria',),
     'videowriter':'opencv',
-    'subsection':(300,500),#(start,stop) frame numbers
+    'subsection':(200,600),#(start,stop) frame numbers
     'text_label':{'text':'BP1',
                  'position':(100,100),
                  'font_colour':(255,0,0),
@@ -155,6 +155,16 @@ annotate = {
                 'classifier': 2,  # For discrete or continuous
                 'thickness': 2
                 },
+    'circles*nans':{'radius': 10,
+                'cmap_type': 'static',  # 'continuous',
+                'cmap_column': 'x',  # For continuous
+                'cmap_max': [470, 1, 2000, 1],  # For continuous
+                'cmap_scale': 1,
+                'colour': (255, 255, 0),  # For static
+                'classifier_column': 'classifier',
+                'classifier': 2,  # For discrete or continuous
+                'thickness': 2
+                },
     'boxes':{'radius':10,
                'cmap_type':'continuous',
                'cmap_column':'x',#None
@@ -188,7 +198,7 @@ annotate = {
                 },
     'trajectories':{'x_column':'x',
                 'y_column':'y',
-                'traj_length': [1000,0,100,1],
+                'traj_length': [1000,0,1000,1],
                 'cmap_type':'static',#'continuous',
                 'cmap_column':'x',#For continuous
                 'cmap_max':[470,1,2000,1],#For continuous
@@ -200,7 +210,7 @@ annotate = {
                },
     'trajectories*bacteria':{'x_column':'x',
                 'y_column':'y',
-                'traj_length': [1000,0,100,1],
+                'traj_length': [1000,0,1000,1],
                 'cmap_type':'static',#'continuous',
                 'cmap_column':'x',#For continuous
                 'cmap_max':[470,1,2000,1],#For continuous

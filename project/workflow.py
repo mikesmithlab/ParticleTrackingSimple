@@ -51,8 +51,9 @@ if '__main__' == __name__:
     from ParticleTrackingSimple.project.bacteria import PARAMETERS
     from Generic.filedialogs import BatchProcess
 
-    for filename in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191218_MP_particles_bacteria/streams/BacteriaParticles001.mp4'):
+    for filename in BatchProcess(pathfilter='/media/ppzmis/data/ActiveMatter/Microscopy/191218_MP_particles_bacteria/streams/BacteriaParticles009.mp4'):
         print(filename)
         track = PTProject(video_filename=filename, params=PARAMETERS)
         #track.process()
         Gui(track)
+

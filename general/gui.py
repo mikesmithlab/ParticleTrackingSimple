@@ -67,7 +67,7 @@ class Gui:
         self.frame_lbl.setText('frame: ' + str(self.frame_no))
 
         self.frame_slider = QSlider(Qt.Horizontal)
-        self.frame_slider.setRange(0, self.num_frames)
+        self.frame_slider.setRange(0, self.num_frames-1)
         self.frame_slider.setValue(0)
         self.frame_slider.valueChanged.connect(self._update_sliders)
         hbox.addWidget(self.frame_lbl)
@@ -155,7 +155,11 @@ class Gui:
     def _update_sliders(self):
         self.frame_no = self.frame_slider.value()
         self.frame_lbl.setText('frame: ' + str(self.frame_no))
-        self.im0 = self.tracker.cap.find_frame(self.frame_no)
+        if self.live_update:
+            self.im0 = self.tracker.cap.find_frame(self.frame_no)
+        else:
+            self.tracker.cap.set_frame(self.frame_no)
+
         for key in self.param_dict:
             params = self.param_dict[key]
             val, bottom, top, step = params
